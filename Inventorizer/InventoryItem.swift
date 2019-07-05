@@ -8,15 +8,25 @@
 
 import Foundation
 import UIKit
-class InventoryItem {
+class InventoryItem: Comparable {
+    static func < (lhs: InventoryItem, rhs: InventoryItem) -> Bool {
+        return lhs.name < rhs.name
+    }
+    
+    static func == (lhs: InventoryItem, rhs: InventoryItem) -> Bool {
+        return lhs.name == rhs.name
+    }
+    
     var name: String
     var category: String
+    var notes: String
     var accountedFor: Bool
     var image: UIImage?
     
-    init(name: String, category: String, image: UIImage?, accountedFor: Bool = false) {
+    init(name: String, category: String, notes: String, image: UIImage?, accountedFor: Bool = false) {
         self.name = name
         self.category = category
+        self.notes = notes
         self.image = image
         self.accountedFor = accountedFor
     }
