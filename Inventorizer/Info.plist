@@ -34,6 +34,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Inventorizer needs access to the camera to allow you to take pictures of your items to store in the app.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Inventorizer needs access to the photo library to allow you to use pictures of your items in the app.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

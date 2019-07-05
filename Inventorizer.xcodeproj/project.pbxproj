@@ -7,21 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */; };
 		0AC30F5B22CD940C004A8525 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F5A22CD940C004A8525 /* AppDelegate.swift */; };
-		0AC30F5D22CD940C004A8525 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F5C22CD940C004A8525 /* ViewController.swift */; };
+		0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */; };
 		0AC30F6022CD940C004A8525 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F5E22CD940C004A8525 /* Main.storyboard */; };
 		0AC30F6222CD940D004A8525 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6122CD940D004A8525 /* Assets.xcassets */; };
 		0AC30F6522CD940D004A8525 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */; };
+		0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItemViewController.swift; sourceTree = "<group>"; };
 		0AC30F5722CD940C004A8525 /* Inventorizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Inventorizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AC30F5A22CD940C004A8525 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		0AC30F5C22CD940C004A8525 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryTableViewController.swift; sourceTree = "<group>"; };
 		0AC30F5F22CD940C004A8525 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0AC30F6122CD940D004A8525 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0AC30F6422CD940D004A8525 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0AC30F6622CD940D004A8525 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,11 +59,13 @@
 			isa = PBXGroup;
 			children = (
 				0AC30F5A22CD940C004A8525 /* AppDelegate.swift */,
-				0AC30F5C22CD940C004A8525 /* ViewController.swift */,
+				0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */,
 				0AC30F5E22CD940C004A8525 /* Main.storyboard */,
 				0AC30F6122CD940D004A8525 /* Assets.xcassets */,
 				0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */,
 				0AC30F6622CD940D004A8525 /* Info.plist */,
+				0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */,
+				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
 			);
 			path = Inventorizer;
 			sourceTree = "<group>";
@@ -135,7 +141,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AC30F5D22CD940C004A8525 /* ViewController.swift in Sources */,
+				0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */,
+				0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */,
+				0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */,
 				0AC30F5B22CD940C004A8525 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -283,6 +291,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K9CGLT5G3D;
 				INFOPLIST_FILE = Inventorizer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -300,6 +309,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = K9CGLT5G3D;
 				INFOPLIST_FILE = Inventorizer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
