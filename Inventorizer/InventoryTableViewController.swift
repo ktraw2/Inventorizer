@@ -7,6 +7,7 @@
 //
 
 import UIKit
+
 class InventoryTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var bottomToolBar: UIToolbar!
@@ -142,8 +143,9 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         
         let confirmDelete = UIAlertController(title: "Delete \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")?", message: nil, preferredStyle: .actionSheet)
         
-        confirmDelete.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+        confirmDelete.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
             // delete rows of table
+            var sectionsToUpdate = [Int]()
             indexPaths.sort()
             var currentSection = 0
             var shiftRow = 0
@@ -153,11 +155,13 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
                 if indexPath.section > currentSection {
                     shiftRow = 0
                     
-                    if (self.sectionWasRemoved) {
+                    if self.sectionWasRemoved {
                         shiftSection += 1
                         self.sectionWasRemoved = false
                     }
-                    
+                    else {
+                        sectionsToUpdate.append(currentSection - shiftSection)
+                    }
                     currentSection = indexPath.section
                 }
                 
@@ -165,7 +169,18 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
                 shiftRow += 1
             }
             
-            self.mainTable.reloadSectionIndexTitles()
+            print(self.sectionWasRemoved)
+            if self.sectionWasRemoved == false {
+                sectionsToUpdate.append(currentSection - shiftSection)
+            }
+            else {
+                self.sectionWasRemoved = false
+            }
+            print(sectionsToUpdate)
+            if sectionsToUpdate.count > 0 {
+                self.mainTable.reloadSectionIndexTitles()
+                self.mainTable.reloadSections(IndexSet(sectionsToUpdate), with: .none)
+            }
             self.editToogleTapped(sender)
         }))
         

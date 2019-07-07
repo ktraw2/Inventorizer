@@ -17,7 +17,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet weak var notesTextView: UITextView!
     @IBOutlet weak var accountedForSwitch: UISwitch!
     @IBOutlet weak var mainScrollView: UIScrollView!
-    @IBOutlet weak var navBarItem: UINavigationItem!
+    @IBOutlet weak var topNavBar: UINavigationItem!
     
     var incomingItemToEdit: InventoryItem?
     var incomingItemCategory: Category?
@@ -38,7 +38,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
                 itemImageView.image = unpackImage
             }
             
-            navBarItem.title = unpackCurrentItem.name
+            topNavBar.title = unpackCurrentItem.name
         }
         
         // give notesTextView a border
@@ -97,7 +97,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         }
     }
     
-    @IBAction func addPhotoTapped(_ sender: Any) {
+    @IBAction func photoTapped(_ sender: UITapGestureRecognizer) {
         let imgPicker = UIImagePickerController()
         imgPicker.delegate = self
         
@@ -120,6 +120,36 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         sourceAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
         
         self.present(sourceAlert, animated: true, completion: nil)
+    }
+    
+    @IBAction func photoLongPressed(_ sender: Any) {
+        guard let image = itemImageView.image else {
+            return
+        }
+        if image == UIImage(named: "Photo") {
+            return
+        }
         
+        let extraOptionsAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        extraOptionsAlert.addAction(UIAlertAction(title: "Save to Camera Roll", style: .default, handler: {(_) in
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }))
+        
+        extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
+            let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "This action cannot be undone.", preferredStyle: .alert)
+            
+            confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
+                self.itemImageView.image = UIImage(named: "Photo")
+            }))
+            
+            confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+            
+            self.present(confirmDeleteAlert, animated: true)
+        }))
+        
+        extraOptionsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(extraOptionsAlert, animated: true)
     }
 }

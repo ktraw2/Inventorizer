@@ -38,6 +38,8 @@
 	<string>Inventorizer needs access to the camera to allow you to take pictures of your items to store in the app.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Inventorizer needs access to the photo library to allow you to use pictures of your items in the app.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Inventorizer needs access to the photo library to allow you to save your pictures to the Camera Roll.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
