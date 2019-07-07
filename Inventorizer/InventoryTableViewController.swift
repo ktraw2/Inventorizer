@@ -16,9 +16,10 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     var buttonsEditing: [UIBarButtonItem]!
     
     let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
-    let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(trashTapped(_:)))
+    let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
     
     var itemsByCategory = [Category]()
+    var sectionWasRemoved = false
     
     // MARK: Begin UITableViewDataSource funcs
     
@@ -60,15 +61,18 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // remove the item
+            tableView.beginUpdates()
             let category = itemsByCategory[indexPath.section]
             category.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
             
             // remove the category if it's empty
             if category.numOfItems() == 0 {
                 itemsByCategory.remove(at: indexPath.section)
+                sectionWasRemoved = true
+                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
-            
-            tableView.reloadData()
+            tableView.endUpdates()
         }
     }
     
@@ -100,6 +104,14 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        if tableView.isEditing {
+            return .delete
+        }
+        
+        return .none
+    }
+    
     // MARK: End UITableViewDelegate funcs
 
     override func viewDidLoad() {
@@ -121,11 +133,82 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     @objc func trashTapped(_ sender: Any) {
+        guard let numRowsSelected = mainTable.indexPathsForSelectedRows?.count else {
+            return
+        }
+        guard var indexPaths = mainTable.indexPathsForSelectedRows else {
+            return
+        }
         
+        let confirmDelete = UIAlertController(title: "Delete \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")?", message: nil, preferredStyle: .actionSheet)
+        
+        confirmDelete.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (_) in
+            // delete rows of table
+            indexPaths.sort()
+            var currentSection = 0
+            var shiftRow = 0
+            var shiftSection = 0
+            
+            for indexPath in indexPaths {
+                if indexPath.section > currentSection {
+                    shiftRow = 0
+                    
+                    if (self.sectionWasRemoved) {
+                        shiftSection += 1
+                        self.sectionWasRemoved = false
+                    }
+                    
+                    currentSection = indexPath.section
+                }
+                
+                self.tableView(self.mainTable, commit: .delete, forRowAt: IndexPath(row: indexPath.row - shiftRow, section: indexPath.section - shiftSection))
+                shiftRow += 1
+            }
+            
+            self.mainTable.reloadSectionIndexTitles()
+            self.editToogleTapped(sender)
+        }))
+        
+        confirmDelete.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+        
+        present(confirmDelete, animated: true)
     }
     
     @objc func markTapped(_ sender: Any) {
+        guard let numRowsSelected = mainTable.indexPathsForSelectedRows?.count else {
+            return
+        }
+        guard let indexPaths = mainTable.indexPathsForSelectedRows else {
+            return
+        }
         
+        let markOptions = UIAlertController(title: "Mark \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
+        
+        markOptions.addAction(UIAlertAction(title: "Accounted For", style: .default, handler: {(_) in
+            // code to mark all
+            for indexPath in indexPaths {
+                self.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = true
+            }
+            
+            // disable editing
+            // TODO: determine if I want this behavior, could make it a setting
+            self.editToogleTapped(sender)
+        }))
+        
+        markOptions.addAction(UIAlertAction(title: "Not Accounted For", style: .default, handler: {(_) in
+            // code to unmark all
+            for indexPath in indexPaths {
+                self.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = false
+            }
+            
+            // disable editing
+            // TODO: determine if I want this behavior, could make it a setting
+            self.editToogleTapped(sender)
+        }))
+        
+        markOptions.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(markOptions, animated: true)
     }
     
     @objc func editToogleTapped(_ sender: Any) {
