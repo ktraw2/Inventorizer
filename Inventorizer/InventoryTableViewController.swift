@@ -12,6 +12,12 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
     
+    var buttonsNotEditing: [UIBarButtonItem]!
+    var buttonsEditing: [UIBarButtonItem]!
+    
+    let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
+    let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(trashTapped(_:)))
+    
     var itemsByCategory = [Category]()
     
     // MARK: Begin UITableViewDataSource funcs
@@ -72,34 +78,63 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-        performSegue(withIdentifier: "EditItemSegue", sender: self)
+        // only if in normal mode
+        if tableView.isEditing == false {
+            performSegue(withIdentifier: "EditItemSegue", sender: self)
+        }
+        else {
+            // sanity check
+            if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
+                trashButton.isEnabled = true
+                markButton.isEnabled = true
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
+                trashButton.isEnabled = false
+                markButton.isEnabled = false
+            }
+        }
     }
     
     // MARK: End UITableViewDelegate funcs
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
+        // make the button bar for when no editing is happening
+        buttonsNotEditing = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editToogleTapped(_:)))]
+        
+        // make the button bar for when editing is happening
+        // disable trash and mark buttons by defualt
+        trashButton.isEnabled = false
+        markButton.isEnabled = false
+        
+        buttonsEditing = [trashButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), markButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editToogleTapped(_:)))]
+        
+        // set the toolbar to have the not editing bar
+        bottomToolBar.setItems(buttonsNotEditing, animated: false)
     }
     
-    @IBAction @objc func editTapped(_ sender: Any) {
-        guard let button = sender as? UIBarButtonItem else {
-            return
-        }
+    @objc func trashTapped(_ sender: Any) {
         
-        for i in 0...((bottomToolBar.items?.count ?? 1) - 1) {
-            if bottomToolBar.items?[i] === button {
-                bottomToolBar.items?.remove(at: i)
-                break
-            }
-        }
+    }
+    
+    @objc func markTapped(_ sender: Any) {
         
+    }
+    
+    @objc func editToogleTapped(_ sender: Any) {
         if mainTable.isEditing {
-            bottomToolBar.items?.append(UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editTapped(_:))))
+            bottomToolBar.setItems(buttonsNotEditing, animated: true)
             mainTable.setEditing(false, animated: true)
         }
         else {
-            bottomToolBar.items?.append(UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editTapped(_:))))
+            bottomToolBar.setItems(buttonsEditing, animated: true)
             mainTable.setEditing(true, animated: true)
         }
 
@@ -195,4 +230,3 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     
     // MARK: End Unwind funcs    
 }
-
