@@ -19,14 +19,16 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var navBarItem: UINavigationItem!
     
-    var currentItem: InventoryItem?
+    var incomingItemToEdit: InventoryItem?
+    var incomingItemCategory: Category?
+    var incomingItemCategoryIndex: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         // load item information
-        if let unpackCurrentItem = currentItem {
+        if let unpackCurrentItem = incomingItemToEdit {
             nameTextField.text = unpackCurrentItem.name
             categoryTextField.text = unpackCurrentItem.category
             notesTextView.text = unpackCurrentItem.notes

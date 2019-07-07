@@ -11,19 +11,13 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
-//    var list = Array<InventoryItem>()
-//    var categories = [String : [InventoryItem]]()
     
     var itemsByCategory = [Category]()
-    
-    
-    var selectedItem: InventoryItem!
     
     // MARK: Begin UITableViewDataSource funcs
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
-        //cell.textLabel?.text = list[indexPath.row].name
         cell.textLabel?.text = itemsByCategory[indexPath.section].getItem(at: indexPath.row).name
         
         return(cell)
@@ -40,18 +34,34 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     func sectionIndexTitles(for: UITableView) -> [String]? {
         var result = [String]()
         for category in itemsByCategory {
-            result.append("\(category.getName()) (\(category.numOfItems()))")
+            let name = category.getName()
+            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numOfItems()))")
         }
-        
+                
         return result
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let name = itemsByCategory[section].getName()
+        return "\((name == "") ? "Uncategorized" : name)"
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let num = itemsByCategory[section].numOfItems()
+        return "\(num) item\((num == 1) ? "" : "s")"
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            itemsByCategory[indexPath.section].remove(at: indexPath.row)
-//            removeFromList(item: Array(categories.values)[indexPath.section][indexPath.row])
-//            updateCategories()
-//            tableView.deleteRows(at: [indexPath], with: .automatic)
+            // remove the item
+            let category = itemsByCategory[indexPath.section]
+            category.remove(at: indexPath.row)
+            
+            // remove the category if it's empty
+            if category.numOfItems() == 0 {
+                itemsByCategory.remove(at: indexPath.section)
+            }
+            
             tableView.reloadData()
         }
     }
@@ -62,7 +72,6 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-        selectedItem = itemsByCategory[didSelectRowAt.section].getItem(at: didSelectRowAt.row)
         performSegue(withIdentifier: "EditItemSegue", sender: self)
     }
     
@@ -98,11 +107,15 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // only continue if we are going to InventoryItemViewController
-        guard let item = segue.destination as? InventoryItemViewController else {
-            return
+        if segue.identifier == "EditItemSegue", let indexPath = mainTable.indexPathForSelectedRow {
+            // only continue if we are going to InventoryItemViewController
+            guard let item = segue.destination as? InventoryItemViewController else {
+                return
+            }
+            item.incomingItemToEdit = itemsByCategory[indexPath.section].getItem(at: indexPath.row)
+            item.incomingItemCategory = itemsByCategory[indexPath.section]
+            item.incomingItemCategoryIndex = indexPath.section
         }
-        item.currentItem = selectedItem
     }
     
     // MARK: Begin Unwind funcs
@@ -144,6 +157,14 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         
         let newItem = InventoryItem(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
         
+        // handle case where an item changes categories
+        if let editedItem = item.incomingItemToEdit, newItem.category != editedItem.category {
+            item.incomingItemCategory!.remove(item: editedItem)
+            if item.incomingItemCategory!.numOfItems() == 0 {
+                itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
+            }
+        }
+        
         // bsearch for category
         let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: Category(name: category))
         if let existingCategoryIndex = categoryIndex {
@@ -163,51 +184,15 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         self.mainTable.reloadData()
-        
-        
-//        // remove old data if necessary
-//        if let unpackedCurrentItem = item.currentItem {
-//            removeFromList(item: unpackedCurrentItem)
-//        }
-//
-//        // append to array and reload the data into the table
-//        self.list.append(InventoryItem(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn))
-//        //self.mainTable.insertRows(at: [IndexPath(row: list.count - 1, section: 0)], with: .automatic)
-//        updateCategories()
-//        self.mainTable.reloadData()
     }
     
     @IBAction func didUnwindCancelFromItem(_ sender: UIStoryboardSegue) {
-        self.mainTable.reloadData()
+        if let selectedRow = mainTable.indexPathForSelectedRow {
+            self.mainTable.deselectRow(at: selectedRow, animated: false)
+        }
         return
     }
     
-    // MARK: End Unwind funcs
-    
-
-    
-//    func removeFromList(item: InventoryItem) {
-//        for i in 0...(list.count - 1) {
-//            if list[i] === item {
-//                list.remove(at: i)
-//                break
-//            }
-//        }
-//    }
-//
-//    func updateCategories() {
-//        categories = [String : [InventoryItem]]()
-//        for item in list {
-//            print(item.name)
-//            if var catrgoryArray = categories[item.category] {
-//                catrgoryArray.append(item)
-//            }
-//            else {
-//                categories[item.category] = [item]
-//            }
-//        }
-//        print(categories)
-//    }
-    
+    // MARK: End Unwind funcs    
 }
 
