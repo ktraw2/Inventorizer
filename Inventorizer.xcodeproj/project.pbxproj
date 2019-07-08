@@ -17,6 +17,8 @@
 		0AC30F6222CD940D004A8525 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6122CD940D004A8525 /* Assets.xcassets */; };
 		0AC30F6522CD940D004A8525 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */; };
 		0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */; };
+		0AE65EFC22D3126500EDDF83 /* SearchResultsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */; };
+		0AE65F0022D3140400EDDF83 /* InventorizerTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE65EFF22D3140400EDDF83 /* InventorizerTableViewDataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,8 @@
 		0AC30F6422CD940D004A8525 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0AC30F6622CD940D004A8525 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItem.swift; sourceTree = "<group>"; };
+		0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsTableViewController.swift; sourceTree = "<group>"; };
+		0AE65EFF22D3140400EDDF83 /* InventorizerTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventorizerTableViewDataSource.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +98,7 @@
 		0AC30F5922CD940C004A8525 /* Inventorizer */ = {
 			isa = PBXGroup;
 			children = (
+				0AE65EFF22D3140400EDDF83 /* InventorizerTableViewDataSource.swift */,
 				0AC30F5A22CD940C004A8525 /* AppDelegate.swift */,
 				0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */,
 				0AC30F5E22CD940C004A8525 /* Main.storyboard */,
@@ -104,6 +109,7 @@
 				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
 				0A8189F322CFBBD800168C02 /* Category.swift */,
 				0A8189F522CFC2E200168C02 /* Utilities.swift */,
+				0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */,
 			);
 			path = Inventorizer;
 			sourceTree = "<group>";
@@ -222,6 +228,8 @@
 				0A8189F422CFBBD800168C02 /* Category.swift in Sources */,
 				0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */,
 				0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */,
+				0AE65F0022D3140400EDDF83 /* InventorizerTableViewDataSource.swift in Sources */,
+				0AE65EFC22D3126500EDDF83 /* SearchResultsTableViewController.swift in Sources */,
 				0AC30F5B22CD940C004A8525 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

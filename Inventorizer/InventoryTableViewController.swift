@@ -8,7 +8,7 @@
 
 import UIKit
 
-class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
+class InventoryTableViewController: UIViewController {
     
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
@@ -17,25 +17,19 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
     var buttonsNotEditing: [UIBarButtonItem]!
     var buttonsEditing: [UIBarButtonItem]!
     var searchController: UISearchController!
+    var dataSource: InventorizerTableViewDataSource!
     
     let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
-    
-    var itemsByCategory = [Category]()
-    var sectionWasRemoved = false
-    
-    // MARK: Begin UISearchResultsUpdating funcs
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        return
-    }
-    
-    // MARK: End UISearchResultsUpdating funcs
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view, typically from a nib.
+        // initialize the data source and set the table's data source to it
+        dataSource = InventorizerTableViewDataSource()
+        mainTable.dataSource = dataSource
+        
         // make the button bar for when no editing is happening
         buttonsNotEditing = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editToogleTapped(_:)))]
         
@@ -49,9 +43,8 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
         
-        searchController = UISearchController(searchResultsController: nil)
+        searchController = UISearchController(searchResultsController: SearchResultsTableViewController(style: .grouped))
         searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
         
         if #available(iOS 11.0, *) {
             topNavigation.searchController = searchController
@@ -60,6 +53,8 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
         else {
             mainTable.tableHeaderView = searchController.searchBar
         }
+        
+        definesPresentationContext = true
     }
     
     @objc func trashTapped(_ sender: UIBarButtonItem) {
@@ -87,9 +82,9 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
                 if indexPath.section > currentSection {
                     shiftRow = 0
                     
-                    if self.sectionWasRemoved {
+                    if self.dataSource.sectionWasRemoved {
                         shiftSection += 1
-                        self.sectionWasRemoved = false
+                        self.dataSource.sectionWasRemoved = false
                     }
                     else {
                         sectionsToUpdate.append(currentSection - shiftSection)
@@ -97,16 +92,16 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
                     currentSection = indexPath.section
                 }
                 
-                self.tableView(self.mainTable, commit: .delete, forRowAt: IndexPath(row: indexPath.row - shiftRow, section: indexPath.section - shiftSection))
+                self.dataSource.tableView(self.mainTable, commit: .delete, forRowAt: IndexPath(row: indexPath.row - shiftRow, section: indexPath.section - shiftSection))
                 shiftRow += 1
             }
             
-            print(self.sectionWasRemoved)
-            if self.sectionWasRemoved == false {
+            print(self.dataSource.sectionWasRemoved)
+            if self.dataSource.sectionWasRemoved == false {
                 sectionsToUpdate.append(currentSection - shiftSection)
             }
             else {
-                self.sectionWasRemoved = false
+                self.dataSource.sectionWasRemoved = false
             }
             print(sectionsToUpdate)
             if sectionsToUpdate.count > 0 {
@@ -137,7 +132,7 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
         markOptions.addAction(UIAlertAction(title: "Accounted For", style: .default, handler: {(_) in
             // code to mark all
             for indexPath in indexPaths {
-                self.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = true
+                self.dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = true
             }
             
             // disable editing
@@ -148,7 +143,7 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
         markOptions.addAction(UIAlertAction(title: "Not Accounted For", style: .default, handler: {(_) in
             // code to unmark all
             for indexPath in indexPaths {
-                self.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = false
+                self.dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = false
             }
             
             // disable editing
@@ -180,8 +175,9 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
             guard let item = segue.destination as? InventoryItemViewController else {
                 return
             }
-            item.incomingItemToEdit = itemsByCategory[indexPath.section].getItem(at: indexPath.row)
-            item.incomingItemCategory = itemsByCategory[indexPath.section]
+            searchController.isActive = false
+            item.incomingItemToEdit = dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row)
+            item.incomingItemCategory = dataSource.itemsByCategory[indexPath.section]
             item.incomingItemCategoryIndex = indexPath.section
         }
     }
@@ -229,26 +225,26 @@ class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
         if let editedItem = item.incomingItemToEdit, newItem.category != editedItem.category {
             item.incomingItemCategory!.remove(item: editedItem)
             if item.incomingItemCategory!.numOfItems() == 0 {
-                itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
+                dataSource.itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
             }
         }
         
         // bsearch for category
-        let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: Category(name: category))
+        let categoryIndex = Utilities.binarySearch(array: dataSource.itemsByCategory, item: Category(name: category))
         if let existingCategoryIndex = categoryIndex {
             // bsearch for item
-            let itemIndex = Utilities.binarySearch(array: itemsByCategory[existingCategoryIndex].getItems(), item: newItem)
+            let itemIndex = Utilities.binarySearch(array: dataSource.itemsByCategory[existingCategoryIndex].getItems(), item: newItem)
             if let existingItemIndex = itemIndex {
-                itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
+                dataSource.itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
             }
             else {
-                itemsByCategory[existingCategoryIndex].add(item: newItem)
+                dataSource.itemsByCategory[existingCategoryIndex].add(item: newItem)
             }
         }
         else {
             // category is not there, append a new category and sort
-            itemsByCategory.append(Category(name: category, initialItems: [newItem]))
-            itemsByCategory.sort()
+            dataSource.itemsByCategory.append(Category(name: category, initialItems: [newItem]))
+            dataSource.itemsByCategory.sort()
         }
         
         self.mainTable.reloadData()
@@ -298,58 +294,46 @@ extension InventoryTableViewController: UITableViewDelegate {
     }
 }
 
-// MARK: UITableViewDataSource extension
-extension InventoryTableViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
-        cell.textLabel?.text = itemsByCategory[indexPath.section].getItem(at: indexPath.row).name
-        
-        return(cell)
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsByCategory[section].numOfItems()
-    }
-    
-    func numberOfSections(in: UITableView) -> Int {
-        return itemsByCategory.count
-    }
-    
-    func sectionIndexTitles(for: UITableView) -> [String]? {
-        var result = [String]()
-        for category in itemsByCategory {
-            let name = category.getName()
-            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numOfItems()))")
+extension InventoryTableViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchQuery = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
+            return
+        }
+        guard let resultsController = searchController.searchResultsController as? SearchResultsTableViewController else {
+            return
         }
         
-        return result
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let name = itemsByCategory[section].getName()
-        return "\((name == "") ? "Uncategorized" : name)"
-    }
-    
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let num = itemsByCategory[section].numOfItems()
-        return "\(num) item\((num == 1) ? "" : "s")"
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // remove the item
-            tableView.beginUpdates()
-            let category = itemsByCategory[indexPath.section]
-            category.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
+        resultsController.dataSource.itemsByCategory = [Category]()
+        
+        // display nothing if no query is entered
+        if searchQuery == "" {
+            resultsController.tableView.reloadData()
+            return
+        }
+        
+        let tokenizedQuery = searchQuery.components(separatedBy: " ")
+        var predicateArray = [NSPredicate]()
+        
+        for query in tokenizedQuery {
+            let subpredicate = NSPredicate(format: "(name CONTAINS[c] %@) OR (category CONTAINS[c] %@) OR (category == '' AND 'Uncategorized' CONTAINS[c] %@)", query, query, query)
+            predicateArray.append(subpredicate)
+        }
+        
+        let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
+        
+        for category in dataSource.itemsByCategory {
+            let arrayToFilter = category.getItems() as NSArray
+            let results = arrayToFilter.filtered(using: compoundPredicate) as! [InventoryItem]
             
-            // remove the category if it's empty
-            if category.numOfItems() == 0 {
-                itemsByCategory.remove(at: indexPath.section)
-                sectionWasRemoved = true
-                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
+            if results.count > 0 {
+                resultsController.dataSource.itemsByCategory.append(Category(name: category.getName(), initialItems: results))
             }
-            tableView.endUpdates()
         }
+        
+        resultsController.dataSource.itemsByCategory.sort()
+        resultsController.tableView.reloadData()
+//        let arrayToFiter = dataSource.itemsByCategory as NSArray
+//        resultsController.dataSource.itemsByCategory = arrayToFiter.filtered(using: categoryPredicate) as! [Category]
+//        resultsController.tableView.reloadData()
     }
 }

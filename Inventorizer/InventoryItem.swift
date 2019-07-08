@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-class InventoryItem: Comparable {
+class InventoryItem: NSObject, Comparable {
     static func < (lhs: InventoryItem, rhs: InventoryItem) -> Bool {
         return lhs.name < rhs.name
     }
@@ -17,8 +17,16 @@ class InventoryItem: Comparable {
         return lhs.name == rhs.name
     }
     
-    var name: String
-    var category: String
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let castedObject = object as? InventoryItem else {
+            return false
+        }
+        
+        return self == castedObject
+    }
+    
+    @objc var name: String
+    @objc var category: String
     var notes: String
     var accountedFor: Bool
     var image: UIImage?
