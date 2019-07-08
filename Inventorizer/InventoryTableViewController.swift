@@ -8,13 +8,15 @@
 
 import UIKit
 
-class InventoryTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class InventoryTableViewController: UIViewController, UISearchResultsUpdating {
     
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
+    @IBOutlet weak var topNavigation: UINavigationItem!
     
     var buttonsNotEditing: [UIBarButtonItem]!
     var buttonsEditing: [UIBarButtonItem]!
+    var searchController: UISearchController!
     
     let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
@@ -22,98 +24,13 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     var itemsByCategory = [Category]()
     var sectionWasRemoved = false
     
-    // MARK: Begin UITableViewDataSource funcs
+    // MARK: Begin UISearchResultsUpdating funcs
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
-        cell.textLabel?.text = itemsByCategory[indexPath.section].getItem(at: indexPath.row).name
-        
-        return(cell)
+    func updateSearchResults(for searchController: UISearchController) {
+        return
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsByCategory[section].numOfItems()
-    }
-    
-    func numberOfSections(in: UITableView) -> Int {
-        return itemsByCategory.count
-    }
-    
-    func sectionIndexTitles(for: UITableView) -> [String]? {
-        var result = [String]()
-        for category in itemsByCategory {
-            let name = category.getName()
-            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numOfItems()))")
-        }
-                
-        return result
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let name = itemsByCategory[section].getName()
-        return "\((name == "") ? "Uncategorized" : name)"
-    }
-    
-    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let num = itemsByCategory[section].numOfItems()
-        return "\(num) item\((num == 1) ? "" : "s")"
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // remove the item
-            tableView.beginUpdates()
-            let category = itemsByCategory[indexPath.section]
-            category.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-            
-            // remove the category if it's empty
-            if category.numOfItems() == 0 {
-                itemsByCategory.remove(at: indexPath.section)
-                sectionWasRemoved = true
-                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
-            }
-            tableView.endUpdates()
-        }
-    }
-    
-    // MARK: End UITableViewDataSource funcs
-    
-    // MARK: Begin UITableViewDelegate funcs
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-        // only if in normal mode
-        if tableView.isEditing == false {
-            performSegue(withIdentifier: "EditItemSegue", sender: self)
-        }
-        else {
-            // sanity check
-            if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
-                trashButton.isEnabled = true
-                markButton.isEnabled = true
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        if tableView.isEditing {
-            if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
-                trashButton.isEnabled = false
-                markButton.isEnabled = false
-            }
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        if tableView.isEditing {
-            return .delete
-        }
-        
-        return .none
-    }
-    
-    // MARK: End UITableViewDelegate funcs
+    // MARK: End UISearchResultsUpdating funcs
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -131,6 +48,18 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
+        
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        
+        if #available(iOS 11.0, *) {
+            topNavigation.searchController = searchController
+            topNavigation.hidesSearchBarWhenScrolling = false
+        }
+        else {
+            mainTable.tableHeaderView = searchController.searchBar
+        }
     }
     
     @objc func trashTapped(_ sender: UIBarButtonItem) {
@@ -333,4 +262,94 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
     }
     
     // MARK: End Unwind funcs    
+}
+
+// MARK: UITableViewDelegate extension
+extension InventoryTableViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+        // only if in normal mode
+        if tableView.isEditing == false {
+            performSegue(withIdentifier: "EditItemSegue", sender: self)
+        }
+        else {
+            // sanity check
+            if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
+                trashButton.isEnabled = true
+                markButton.isEnabled = true
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
+                trashButton.isEnabled = false
+                markButton.isEnabled = false
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        if tableView.isEditing {
+            return .delete
+        }
+        
+        return .none
+    }
+}
+
+// MARK: UITableViewDataSource extension
+extension InventoryTableViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
+        cell.textLabel?.text = itemsByCategory[indexPath.section].getItem(at: indexPath.row).name
+        
+        return(cell)
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return itemsByCategory[section].numOfItems()
+    }
+    
+    func numberOfSections(in: UITableView) -> Int {
+        return itemsByCategory.count
+    }
+    
+    func sectionIndexTitles(for: UITableView) -> [String]? {
+        var result = [String]()
+        for category in itemsByCategory {
+            let name = category.getName()
+            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numOfItems()))")
+        }
+        
+        return result
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let name = itemsByCategory[section].getName()
+        return "\((name == "") ? "Uncategorized" : name)"
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let num = itemsByCategory[section].numOfItems()
+        return "\(num) item\((num == 1) ? "" : "s")"
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // remove the item
+            tableView.beginUpdates()
+            let category = itemsByCategory[indexPath.section]
+            category.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+            // remove the category if it's empty
+            if category.numOfItems() == 0 {
+                itemsByCategory.remove(at: indexPath.section)
+                sectionWasRemoved = true
+                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
+            }
+            tableView.endUpdates()
+        }
+    }
 }

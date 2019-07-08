@@ -164,6 +164,4 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         
         present(extraOptionsAlert, animated: true)
     }
-    
-    
 }

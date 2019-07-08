@@ -20,7 +20,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-3D-tc3">
-                                <rect key="frame" x="0.0" y="144" width="414" height="669"/>
+                                <rect key="frame" x="0.0" y="140" width="414" height="673"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="Q6M-fG-RPe">
@@ -44,26 +44,16 @@
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items/>
                             </toolbar>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="xqV-re-OYs">
-                                <rect key="frame" x="0.0" y="88" width="414" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <outlet property="delegate" destination="Cld-00-8Ws" id="D3v-tD-kcA"/>
-                                </connections>
-                            </searchBar>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="VTC-3D-tc3" firstAttribute="top" secondItem="xqV-re-OYs" secondAttribute="bottom" id="1Bv-bn-6CP"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Nnz-60-2XT" secondAttribute="bottom" id="4U3-VA-rJV"/>
                             <constraint firstItem="Nnz-60-2XT" firstAttribute="top" secondItem="VTC-3D-tc3" secondAttribute="bottom" id="7qa-7p-EvC"/>
-                            <constraint firstItem="xqV-re-OYs" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Cyo-UB-znm"/>
-                            <constraint firstItem="xqV-re-OYs" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="JHc-Mv-7fq"/>
                             <constraint firstItem="Nnz-60-2XT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="PUv-nQ-AsT"/>
                             <constraint firstItem="VTC-3D-tc3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="QtA-QD-wKU"/>
+                            <constraint firstItem="VTC-3D-tc3" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="Ur6-qb-T9x"/>
                             <constraint firstItem="Nnz-60-2XT" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="VEt-mR-KI6"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="VTC-3D-tc3" secondAttribute="trailing" id="cK9-Bc-PwS"/>
-                            <constraint firstItem="xqV-re-OYs" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="oCk-dH-8Uo"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -77,19 +67,10 @@
                     <connections>
                         <outlet property="bottomToolBar" destination="Nnz-60-2XT" id="nn0-xj-QtE"/>
                         <outlet property="mainTable" destination="VTC-3D-tc3" id="c9V-W3-g57"/>
-                        <outlet property="searchDisplayController" destination="Cld-00-8Ws" id="gUA-jy-VfG"/>
+                        <outlet property="topNavigation" destination="R30-WU-xDY" id="xP4-aU-efE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="Cld-00-8Ws">
-                    <connections>
-                        <outlet property="delegate" destination="BYZ-38-t0r" id="IBB-Vd-O5D"/>
-                        <outlet property="searchBar" destination="xqV-re-OYs" id="UwJ-HD-X3c"/>
-                        <outlet property="searchContentsController" destination="BYZ-38-t0r" id="kZ6-2z-Ntu"/>
-                        <outlet property="searchResultsDataSource" destination="BYZ-38-t0r" id="eUv-xJ-6HI"/>
-                        <outlet property="searchResultsDelegate" destination="BYZ-38-t0r" id="BS5-Ax-JlZ"/>
-                    </connections>
-                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="957.97101449275374" y="20.758928571428569"/>
         </scene>
@@ -203,7 +184,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Wet-GK-BM0"/>
                     </view>
-                    <navigationItem key="navigationItem" title="New Item" id="kMr-7q-XFz">
+                    <navigationItem key="navigationItem" title="New Item" largeTitleDisplayMode="never" id="kMr-7q-XFz">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="1m2-9d-uPe">
                             <connections>
                                 <segue destination="2gr-ZI-yK9" kind="unwind" unwindAction="didUnwindCancelFromItem:" id="VKI-Yk-bdS"/>
@@ -246,8 +227,8 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="X0e-eQ-5gK" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="HA5-15-bU5">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="HA5-15-bU5">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
