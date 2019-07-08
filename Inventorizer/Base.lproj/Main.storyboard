@@ -20,7 +20,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-3D-tc3">
-                                <rect key="frame" x="0.0" y="144" width="414" height="674"/>
+                                <rect key="frame" x="0.0" y="144" width="414" height="669"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="Q6M-fG-RPe">
@@ -41,7 +41,7 @@
                                 </connections>
                             </tableView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nnz-60-2XT">
-                                <rect key="frame" x="0.0" y="818" width="414" height="44"/>
+                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items/>
                             </toolbar>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="xqV-re-OYs">
@@ -123,8 +123,9 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="DWA-TA-kmF">
                                         <rect key="frame" x="10" y="10" width="394" height="683.5"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Photo" translatesAutoresizingMaskIntoConstraints="NO" id="VmZ-Su-KxT">
+                                            <imageView clipsSubviews="YES" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Photo" translatesAutoresizingMaskIntoConstraints="NO" id="VmZ-Su-KxT">
                                                 <rect key="frame" x="0.0" y="0.0" width="394" height="394"/>
+                                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="VmZ-Su-KxT" secondAttribute="height" multiplier="1:1" id="nrV-rM-or5"/>
@@ -189,7 +190,7 @@
                                     <constraint firstItem="DWA-TA-kmF" firstAttribute="top" secondItem="odl-Dr-Qhj" secondAttribute="top" constant="10" id="CFs-y9-L17"/>
                                     <constraint firstItem="DWA-TA-kmF" firstAttribute="centerX" secondItem="odl-Dr-Qhj" secondAttribute="centerX" id="GXe-5m-932"/>
                                     <constraint firstItem="DWA-TA-kmF" firstAttribute="trailing" secondItem="odl-Dr-Qhj" secondAttribute="trailing" id="Gj9-I2-opS"/>
-                                    <constraint firstItem="DWA-TA-kmF" firstAttribute="bottom" secondItem="odl-Dr-Qhj" secondAttribute="bottom" id="HpA-07-BTv"/>
+                                    <constraint firstItem="DWA-TA-kmF" firstAttribute="bottom" secondItem="odl-Dr-Qhj" secondAttribute="bottom" constant="-10" id="HpA-07-BTv"/>
                                 </constraints>
                             </scrollView>
                         </subviews>

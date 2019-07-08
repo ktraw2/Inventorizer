@@ -7,8 +7,11 @@
 //
 
 import Foundation
+import UIKit
 
 class Utilities {
+    static let defaultPlaceholderImage = UIImage(named: "Photo")
+    
     static func binarySearch<T:Comparable>(array: Array<T>, item: T) -> Int? {
         if array.count == 0 {
             return nil
@@ -34,6 +37,23 @@ class Utilities {
                     return nil
                 }
             }
+        }
+    }
+    
+    static func updateImage(for imageView: UIImageView, with imageOptional: UIImage?) {
+        guard let image = imageOptional else {
+            return
+        }
+        
+        imageView.image = image
+        
+        if image == defaultPlaceholderImage {
+            imageView.contentMode = .center
+            imageView.backgroundColor = .lightGray
+        }
+        else {
+            imageView.contentMode = .scaleAspectFit
+            imageView.backgroundColor = .none
         }
     }
 }

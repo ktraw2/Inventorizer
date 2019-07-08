@@ -35,7 +35,10 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
             accountedForSwitch.setOn(unpackCurrentItem.accountedFor, animated: false)
             
             if let unpackImage = unpackCurrentItem.image {
-                itemImageView.image = unpackImage
+                Utilities.updateImage(for: itemImageView, with: unpackImage)
+            }
+            else {
+                Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
             }
             
             topNavBar.title = unpackCurrentItem.name
@@ -93,7 +96,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         
         let mediaType = info[UIImagePickerController.InfoKey.mediaType] as? NSString
         if mediaType == kUTTypeImage {
-            itemImageView.image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+            Utilities.updateImage(for: itemImageView, with: info[UIImagePickerController.InfoKey.originalImage] as? UIImage)
         }
     }
     
@@ -102,6 +105,10 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         imgPicker.delegate = self
         
         let sourceAlert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
+        // code for iPads
+        sourceAlert.popoverPresentationController?.sourceView = itemImageView
+        sourceAlert.popoverPresentationController?.sourceRect = CGRect(x: sender.location(in: itemImageView).x, y: sender.location(in: itemImageView).y, width: 0, height: 0)
         
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             sourceAlert.addAction(UIAlertAction(title: "Take Photo", style: UIAlertAction.Style.default, handler: {(_) in
@@ -122,15 +129,19 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         self.present(sourceAlert, animated: true, completion: nil)
     }
     
-    @IBAction func photoLongPressed(_ sender: Any) {
+    @IBAction func photoLongPressed(_ sender: UITapGestureRecognizer) {
         guard let image = itemImageView.image else {
             return
         }
-        if image == UIImage(named: "Photo") {
+        if image == Utilities.defaultPlaceholderImage {
             return
         }
         
         let extraOptionsAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        // code for iPads
+        extraOptionsAlert.popoverPresentationController?.sourceView = itemImageView
+        extraOptionsAlert.popoverPresentationController?.sourceRect = CGRect(x: sender.location(in: itemImageView).x, y: sender.location(in: itemImageView).y, width: 0, height: 0)
         
         extraOptionsAlert.addAction(UIAlertAction(title: "Save to Camera Roll", style: .default, handler: {(_) in
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
@@ -140,7 +151,8 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
             let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "This action cannot be undone.", preferredStyle: .alert)
             
             confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
-                self.itemImageView.image = UIImage(named: "Photo")
+                Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)
+                
             }))
             
             confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
@@ -152,4 +164,6 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         
         present(extraOptionsAlert, animated: true)
     }
+    
+    
 }

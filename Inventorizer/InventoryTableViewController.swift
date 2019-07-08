@@ -133,7 +133,7 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
     }
     
-    @objc func trashTapped(_ sender: Any) {
+    @objc func trashTapped(_ sender: UIBarButtonItem) {
         guard let numRowsSelected = mainTable.indexPathsForSelectedRows?.count else {
             return
         }
@@ -142,6 +142,9 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         let confirmDelete = UIAlertController(title: "Delete \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")?", message: nil, preferredStyle: .actionSheet)
+        
+        // code for iPads
+        confirmDelete.popoverPresentationController?.barButtonItem = sender
         
         confirmDelete.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
             // delete rows of table
@@ -189,7 +192,7 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         present(confirmDelete, animated: true)
     }
     
-    @objc func markTapped(_ sender: Any) {
+    @objc func markTapped(_ sender: UIBarButtonItem) {
         guard let numRowsSelected = mainTable.indexPathsForSelectedRows?.count else {
             return
         }
@@ -198,6 +201,9 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         }
         
         let markOptions = UIAlertController(title: "Mark \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
+        
+        // code for iPads
+        markOptions.popoverPresentationController?.barButtonItem = sender
         
         markOptions.addAction(UIAlertAction(title: "Accounted For", style: .default, handler: {(_) in
             // code to mark all
@@ -284,7 +290,7 @@ class InventoryTableViewController: UIViewController, UITableViewDelegate, UITab
         
         // only make image not nil if the UImage in the UIImageView is not the default "Photo" resource
         var image: UIImage?
-        if item.itemImageView.image != UIImage(named: "Photo") {
+        if item.itemImageView.image != Utilities.defaultPlaceholderImage {
             image = item.itemImageView.image
         }
         
