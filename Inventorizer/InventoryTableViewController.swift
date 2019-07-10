@@ -43,7 +43,11 @@ class InventoryTableViewController: UIViewController {
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
         
-        searchController = UISearchController(searchResultsController: SearchResultsTableViewController(style: .grouped))
+        let resultsController = SearchResultsTableViewController(style: .grouped)
+        resultsController.baseNavigationController = navigationController
+        resultsController.masterDataSource = dataSource
+        
+        searchController = UISearchController(searchResultsController: resultsController)
         searchController.searchResultsUpdater = self
         
         if #available(iOS 11.0, *) {
@@ -175,10 +179,23 @@ class InventoryTableViewController: UIViewController {
             guard let item = segue.destination as? InventoryItemViewController else {
                 return
             }
+            
             searchController.isActive = false
             item.incomingItemToEdit = dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row)
             item.incomingItemCategory = dataSource.itemsByCategory[indexPath.section]
             item.incomingItemCategoryIndex = indexPath.section
+            item.masterDataSource = dataSource
+            mainTable.deselectRow(at: indexPath, animated: false)
+        }
+        else if segue.identifier == "NewItemSegue" {
+            guard let nav = segue.destination as? UINavigationController else {
+                return
+            }
+            guard let item = nav.topViewController as? InventoryItemViewController else {
+                return
+            }
+            
+            item.masterDataSource = dataSource
         }
     }
     
@@ -190,70 +207,12 @@ class InventoryTableViewController: UIViewController {
             return
         }
         
-        // get the name from the relavent UITextField, stop if it's nil
-        guard var name = item.nameTextField.text else {
-            return
-        }
         
-        // trim whitespace, return if we are left with an empty string
-        name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if name == "" {
-            return
-        }
-        
-        // try to get the category from the relavent UITextField, if there is none, then use an empty string
-        var category = ""
-        if let categoryText = item.categoryTextField.text {
-            category = categoryText.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        
-        // try to get the category from the relavent UITextView, if there is none, then use an empty string
-        var notes = ""
-        if let notesText = item.notesTextView.text {
-            notes = notesText.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        
-        // only make image not nil if the UImage in the UIImageView is not the default "Photo" resource
-        var image: UIImage?
-        if item.itemImageView.image != Utilities.defaultPlaceholderImage {
-            image = item.itemImageView.image
-        }
-        
-        let newItem = InventoryItem(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
-        
-        // handle case where an item changes categories
-        if let editedItem = item.incomingItemToEdit, newItem.category != editedItem.category {
-            item.incomingItemCategory!.remove(item: editedItem)
-            if item.incomingItemCategory!.numOfItems() == 0 {
-                dataSource.itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
-            }
-        }
-        
-        // bsearch for category
-        let categoryIndex = Utilities.binarySearch(array: dataSource.itemsByCategory, item: Category(name: category))
-        if let existingCategoryIndex = categoryIndex {
-            // bsearch for item
-            let itemIndex = Utilities.binarySearch(array: dataSource.itemsByCategory[existingCategoryIndex].getItems(), item: newItem)
-            if let existingItemIndex = itemIndex {
-                dataSource.itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
-            }
-            else {
-                dataSource.itemsByCategory[existingCategoryIndex].add(item: newItem)
-            }
-        }
-        else {
-            // category is not there, append a new category and sort
-            dataSource.itemsByCategory.append(Category(name: category, initialItems: [newItem]))
-            dataSource.itemsByCategory.sort()
-        }
         
         self.mainTable.reloadData()
     }
     
     @IBAction func didUnwindCancelFromItem(_ sender: UIStoryboardSegue) {
-        if let selectedRow = mainTable.indexPathForSelectedRow {
-            self.mainTable.deselectRow(at: selectedRow, animated: false)
-        }
         return
     }
     
@@ -263,6 +222,12 @@ class InventoryTableViewController: UIViewController {
 // MARK: UITableViewDelegate extension
 extension InventoryTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+//        if tableView == mainTable {
+//            mainTableView(tableView, didSelectRowAt: didSelectRowAt)
+//        }
+//        else {
+//            searchTableView(tableView, didSelectRowAt: didSelectRowAt)
+//        }
         // only if in normal mode
         if tableView.isEditing == false {
             performSegue(withIdentifier: "EditItemSegue", sender: self)
@@ -275,6 +240,22 @@ extension InventoryTableViewController: UITableViewDelegate {
             }
         }
     }
+    
+    func mainTableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+        
+    }
+    
+//    func searchTableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+//        let selectedItemCategoryIndex = didSelectRowAt.section
+//        let selectedItemCategory = resultsController.dataSource.itemsByCategory[selectedItemCategoryIndex]
+//        let selectedItem = selectedItemCategory.getItem(at: didSelectRowAt.row)
+//
+//        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, selectedItemCategory, selectedItemCategoryIndex) else {
+//            return
+//        }
+//
+//        navigationController?.pushViewController(itemViewController, animated: true)
+//    }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
@@ -326,7 +307,9 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             let results = arrayToFilter.filtered(using: compoundPredicate) as! [InventoryItem]
             
             if results.count > 0 {
-                resultsController.dataSource.itemsByCategory.append(Category(name: category.getName(), initialItems: results))
+                let resultsCategory = Category(name: category.getName(), initialItems: results)
+                resultsController.dataSource.itemsByCategory.append(resultsCategory)
+                resultsController.resultsToWholeCategoryMap[resultsCategory] = category
             }
         }
         

@@ -89,10 +89,10 @@
             </objects>
             <point key="canvasLocation" x="1828" y="370"/>
         </scene>
-        <!--New Item-->
+        <!--Inventory Item View Controller-->
         <scene sceneID="dfM-Rh-JF5">
             <objects>
-                <viewController id="m6b-Py-rQ6" customClass="InventoryItemViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="InventoryItemViewController" id="m6b-Py-rQ6" userLabel="Inventory Item View Controller" customClass="InventoryItemViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="KTc-lf-fMG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -186,12 +186,12 @@
                     <navigationItem key="navigationItem" title="New Item" largeTitleDisplayMode="never" id="kMr-7q-XFz">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="1m2-9d-uPe">
                             <connections>
-                                <segue destination="2gr-ZI-yK9" kind="unwind" unwindAction="didUnwindCancelFromItem:" id="VKI-Yk-bdS"/>
+                                <segue destination="2gr-ZI-yK9" kind="unwind" identifier="CloseItem" unwindAction="didUnwindSaveFromItem:" id="8we-Hm-bIH"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="3zo-uB-cAE">
                             <connections>
-                                <segue destination="2gr-ZI-yK9" kind="unwind" unwindAction="didUnwindSaveFromItem:" id="LUk-0D-ycX"/>
+                                <action selector="saveTapped:" destination="m6b-Py-rQ6" id="yxL-gn-Y9W"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -244,6 +244,6 @@
         <image name="Photo" width="120" height="120"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="6v2-4p-MJY"/>
+        <segue reference="f99-6D-J8q"/>
     </inferredMetricsTieBreakers>
 </document>

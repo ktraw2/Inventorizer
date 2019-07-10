@@ -7,13 +7,17 @@
 //
 
 import Foundation
-class Category: Comparable {
+class Category: Comparable, Hashable {
     static func < (lhs: Category, rhs: Category) -> Bool {
         return lhs.name < rhs.name
     }
     
     static func == (lhs: Category, rhs: Category) -> Bool {
         return lhs.name == rhs.name
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
     
     private var name: String

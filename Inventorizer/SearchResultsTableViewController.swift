@@ -10,12 +10,16 @@ import UIKit
 
 class SearchResultsTableViewController: UITableViewController {
     var dataSource: InventorizerTableViewDataSource!
+    var masterDataSource: InventorizerTableViewDataSource?
+    var baseNavigationController: UINavigationController?
+    var resultsToWholeCategoryMap = [Category: Category]()
      
     override func viewDidLoad() {
         super.viewDidLoad()
         
         dataSource = InventorizerTableViewDataSource()
         self.tableView.dataSource = dataSource
+        self.tableView.delegate = self
         
 
         // Uncomment the following line to preserve selection between presentations
@@ -25,6 +29,19 @@ class SearchResultsTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
+        let selectedItemCategoryIndex = didSelectRowAt.section
+        let selectedItemCategory = dataSource.itemsByCategory[selectedItemCategoryIndex]
+        let selectedItem = selectedItemCategory.getItem(at: didSelectRowAt.row)
+        
+        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, resultsToWholeCategoryMap[selectedItemCategory], selectedItemCategoryIndex) else {
+            return
+        }
+        itemViewController.masterDataSource = masterDataSource
+        
+        baseNavigationController?.pushViewController(itemViewController, animated: true)
+    }
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {

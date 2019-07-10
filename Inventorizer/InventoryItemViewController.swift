@@ -22,6 +22,23 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     var incomingItemToEdit: InventoryItem?
     var incomingItemCategory: Category?
     var incomingItemCategoryIndex: Int?
+    var masterDataSource: InventorizerTableViewDataSource?
+    
+    private static let storyboardIdentifier = "Main"
+    private static let selfIdentifier = "InventoryItemViewController"
+    
+    class func buildItemControllerWith(_ incomingItemToEdit: InventoryItem?, _ incomingItemCategory: Category?, _ incomingItemCategoryIndex: Int?) -> InventoryItemViewController? {
+        let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
+        guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
+            return nil
+        }
+        
+        itemViewController.incomingItemToEdit = incomingItemToEdit
+        itemViewController.incomingItemCategory = incomingItemCategory
+        itemViewController.incomingItemCategoryIndex = incomingItemCategoryIndex
+        
+        return itemViewController
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -100,6 +117,16 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         }
     }
     
+    @IBAction func saveTapped(_ sender: UIBarButtonItem) {
+        guard let dataSource = masterDataSource else {
+            return
+        }
+        
+        dataSource.updateTable(fromDataIn: self, doIfSuccessful: {
+            self.performSegue(withIdentifier: "CloseItem", sender: self)
+        })
+    }
+    
     @IBAction func photoTapped(_ sender: UITapGestureRecognizer) {
         let imgPicker = UIImagePickerController()
         imgPicker.delegate = self
@@ -148,7 +175,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         }))
         
         extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
-            let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "This action cannot be undone.", preferredStyle: .alert)
+            let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "You can undo this action later by selecting \"Cancel\"", preferredStyle: .alert)
             
             confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
                 Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)

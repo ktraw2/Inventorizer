@@ -67,4 +67,114 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             tableView.endUpdates()
         }
     }
+    
+    func updateTable(fromDataIn item: InventoryItemViewController, doIfSuccessful function: (() -> Void)? = nil) {
+        // get the name from the relavent UITextField, stop if it's nil
+        guard var name = item.nameTextField.text else {
+            errorEmptyName(for: item)
+            return
+        }
+        
+        // trim whitespace, return if we are left with an empty string
+        name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        if name == "" {
+            errorEmptyName(for: item)
+            return
+        }
+        
+        // try to get the category from the relavent UITextField, if there is none, then use an empty string
+        var category = ""
+        if let categoryText = item.categoryTextField.text {
+            category = categoryText.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        // try to get the category from the relavent UITextView, if there is none, then use an empty string
+        var notes = ""
+        if let notesText = item.notesTextView.text {
+            notes = notesText.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        // only make image not nil if the UImage in the UIImageView is not the default "Photo" resource
+        var image: UIImage?
+        if item.itemImageView.image != Utilities.defaultPlaceholderImage {
+            image = item.itemImageView.image
+        }
+        
+        let newItem = InventoryItem(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
+        
+        // handle case where an item changes categories or name
+        // if we are changing categories or names we risk colliding with an already existing object, so this variable keeps track of the risk
+        var itemIsChangingKeyData = false
+        if let editedItem = item.incomingItemToEdit, (newItem.category != editedItem.category || newItem.name != editedItem.name) {
+                itemIsChangingKeyData = true
+//            else if newItem.name != editedItem.name {
+//                itemIsChangingKeyData = true
+//                item.incomingItemCategory!.remove(item: editedItem)
+//            }
+        }
+        else {
+            itemIsChangingKeyData = true
+        }
+        
+        // bsearch for category
+        let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: Category(name: category))
+        if let existingCategoryIndex = categoryIndex {
+            // bsearch for item
+            let itemIndex = Utilities.binarySearch(array: itemsByCategory[existingCategoryIndex].getItems(), item: newItem)
+            if let existingItemIndex = itemIndex {
+                // determine if we are about to collide with an object that isn't the one we edited
+                if itemIsChangingKeyData {
+                    // we are, because the original object is gone based on code above, so give a warning
+                    let aboutToOverwriteWarning = UIAlertController(title: "Overwrite data?", message: "The name or category you have given corresponds to an already existing item in the table. Do you want to overwrite this item? This action cannot be undone.", preferredStyle: .alert)
+                    
+                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
+                        var categoryIndexShift = 0
+                        var itemIndexShift = 0
+                        if let editedItem = item.incomingItemToEdit {
+                            if item.incomingItemCategory!.getName() == category && editedItem.name < name {
+                                itemIndexShift = 1
+                            }
+                            
+                            item.incomingItemCategory!.remove(item: editedItem)
+                            if item.incomingItemCategory!.numOfItems() == 0 {
+                                if item.incomingItemCategory!.getName() < category {
+                                    categoryIndexShift = 1
+                                }
+                                self.itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
+                            }
+                        }
+                        
+                        self.itemsByCategory[existingCategoryIndex - categoryIndexShift].update(itemAt: existingItemIndex - itemIndexShift, with: newItem)
+                        function?()
+                    }))
+                    
+                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+                    
+                    item.present(aboutToOverwriteWarning, animated: true)
+                }
+                else {
+                    itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
+                    function?()
+                }
+            }
+            else {
+                itemsByCategory[existingCategoryIndex].add(item: newItem)
+                function?()
+            }
+        }
+        else {
+            // category is not there, append a new category and sort
+            itemsByCategory.append(Category(name: category, initialItems: [newItem]))
+            itemsByCategory.sort()
+            function?()
+        }
+    }
+    
+    private func errorEmptyName(for sender: InventoryItemViewController) {
+        let emptyNameError = UIAlertController(title: "Warning", message: "You did not provide a valid name. Please enter a name for this item.", preferredStyle: .alert)
+        
+        emptyNameError.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        
+        sender.present(emptyNameError, animated: true)
+    }
 }
