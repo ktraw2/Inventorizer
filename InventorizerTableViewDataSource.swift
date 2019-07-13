@@ -107,27 +107,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         var itemIsChangingKeyData = false
         var dataCommit = DataCommit()
         
-//        var stagedCategoryToUpdate: Category?
-//        var stagedCategoryIndex: Int!
-//        var stagedItemToRemove: InventoryItem?
         if let editedItem = item.incomingItemToEdit {
-//            if newItem.category != editedItem.category {
-//                itemIsChangingKeyData = true
-//                dataCommit.objectToUpdate = IndexedCategory(category: item.incomingItemCategory!, index: item.incomingItemCategoryIndex!)
-//
-//                //
-//                stagedCategoryToUpdate = item.incomingItemCategory
-//                stagedCategoryIndex = item.incomingItemCategoryIndex!
-//            }
-//            else if newItem.category == editedItem.category && newItem.name != editedItem.name {
-//                itemIsChangingKeyData = true
-//                //
-//                stagedItemToRemove = editedItem
-//                //
-//
-//                dataCommit.objectToUpdate = editedItem
-//                dataCommit.
-//            }
             if newItem.category != editedItem.category || newItem.name != editedItem.name {
                 itemIsChangingKeyData = true
                 dataCommit.stagedCategory = IndexedCategory(category: item.incomingItemCategory!, index: item.incomingItemCategoryIndex!)
@@ -151,23 +131,6 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                     let aboutToOverwriteWarning = UIAlertController(title: "Overwrite data?", message: "The name or category you have given corresponds to an already existing item in the table. Do you want to overwrite this item? This action cannot be undone.", preferredStyle: .alert)
                     
                     aboutToOverwriteWarning.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
-                        var categoryIndexShift = 0
-                        var itemIndexShift = 0
-                        if let editedItem = item.incomingItemToEdit {
-                            if item.incomingItemCategory!.getName() == category && editedItem.name < name {
-                                itemIndexShift = 1
-                            }
-                            
-                            //item.incomingItemCategory!.remove(item: editedItem)
-                            if item.incomingItemCategory!.numOfItems() == 0 {
-                                if item.incomingItemCategory!.getName() < category {
-                                    categoryIndexShift = 1
-                                }
-                                //self.itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
-                            }
-                        }
-                        
-//                        self.commitStaged(for: item, stagedCategoryToUpdate, stagedCategoryIndex, stagedItemToRemove)
                         dataCommit.shiftedCategoryIndex = existingCategoryIndex
                         dataCommit.shiftedItemIndex = existingItemIndex
                         dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
@@ -186,7 +149,6 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 }
             }
             else {
-//                commitStaged(for: item, stagedCategoryToUpdate, stagedCategoryIndex, stagedItemToRemove)
                 dataCommit.shiftedCategoryIndex = existingCategoryIndex
                 dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                 
@@ -196,7 +158,6 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         }
         else {
             // category is not there, append a new category and sort
-//            commitStaged(for: item, stagedCategoryToUpdate, stagedCategoryIndex, stagedItemToRemove)
             dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
             
             itemsByCategory.append(Category(name: category, initialItems: [newItem]))
@@ -213,39 +174,14 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         sender.present(emptyNameError, animated: true)
     }
     
-    private func commitStaged(for item: InventoryItemViewController, _ stagedCategoryToUpdate: Category?, _ stagedCategoryIndex: Int!, _ stagedItemToRemove: InventoryItem?) {
-        guard let editedItem = item.incomingItemToEdit else {
-            return
-        }
-        
-        if let stagedCategory = stagedCategoryToUpdate {
-            stagedCategory.remove(item: editedItem)
-            
-            if stagedCategory.numOfItems() == 0 {
-                itemsByCategory.remove(at: stagedCategoryIndex)
-            }
-        }
-        
-        if let stagedItem = stagedItemToRemove {
-            item.incomingItemCategory!.remove(item: stagedItem)
-            if item.incomingItemCategory!.numOfItems() == 0 {
-                itemsByCategory.remove(at: item.incomingItemCategoryIndex!)
-            }
-        }
-    }
-    
     private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: InventoryItem) -> DataCommit {
         
         guard let editedItem = commit.stagedItem, let editedCategory = commit.stagedCategory else {
             return commit
         }
-//        guard let editedItem = item.incomingItemToEdit else {
-//            return commit
-//        }
         
         var result = commit
         
-//        if let stagedCategory = commit.objectToUpdate as? IndexedCategory {
         if editedCategory.category == Category(name: newItem.category) && editedItem < newItem {
             result.shiftedItemIndex -= 1
         }
@@ -259,10 +195,6 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             
             itemsByCategory.remove(at: editedCategory.index)
         }
-//        }
-//        else if let stagedItem = commit.objectToUpdate as? CategorizedItem {
-//
-//        }
         
         return result
     }
