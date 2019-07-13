@@ -74,3 +74,13 @@ class Category: Comparable, Hashable {
         return items[index]
     }
 }
+
+struct IndexedCategory {
+    var category: Category
+    var index: Int
+}
+
+struct CategorizedItem {
+    var item: InventoryItem
+    var indexedCategory: IndexedCategory
+}

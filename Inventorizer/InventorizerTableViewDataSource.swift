@@ -107,11 +107,11 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         var itemIsChangingKeyData = false
         var dataCommit = DataCommit()
         
-        if let editedItem = item.incomingItemToEdit {
-            if newItem.category != editedItem.category || newItem.name != editedItem.name {
+        if let incomingData = item.incomingData {
+            if newItem.category != incomingData.item.category || newItem.name != incomingData.item.name {
                 itemIsChangingKeyData = true
-                dataCommit.stagedCategory = IndexedCategory(category: item.incomingItemCategory!, index: item.incomingItemCategoryIndex!)
-                dataCommit.stagedItem = editedItem
+                dataCommit.stagedCategory = incomingData.indexedCategory
+                dataCommit.stagedItem = incomingData.item
             }
             
         }
@@ -149,8 +149,10 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 }
             }
             else {
+                // we are working within the same category
                 dataCommit.shiftedCategoryIndex = existingCategoryIndex
-                dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
+                dataCommit.mustKeepCategory = true
+                dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                 
                 itemsByCategory[dataCommit.shiftedCategoryIndex].add(item: newItem)
                 function?()
@@ -158,7 +160,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         }
         else {
             // category is not there, append a new category and sort
-            dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
+            dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
             
             itemsByCategory.append(Category(name: category, initialItems: [newItem]))
             itemsByCategory.sort()
@@ -188,7 +190,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         
         editedCategory.category.remove(item: editedItem)
         
-        if editedCategory.category.numOfItems() == 0 {
+        if editedCategory.category.numOfItems() == 0 && commit.mustKeepCategory == false {
             if editedCategory.category < Category(name: newItem.category) {
                 result.shiftedCategoryIndex -= 1
             }
@@ -203,17 +205,15 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         var stagedCategory: IndexedCategory?
         var stagedItem: InventoryItem?
         
+        var mustKeepCategory: Bool
+        
         var shiftedItemIndex: Int
         var shiftedCategoryIndex: Int
         
         init() {
+            mustKeepCategory = false
             shiftedItemIndex = 0
             shiftedCategoryIndex = 0
         }
-    }
-    
-    struct IndexedCategory {
-        var category: Category
-        var index: Int
     }
 }

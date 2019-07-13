@@ -19,23 +19,37 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var topNavBar: UINavigationItem!
     
-    var incomingItemToEdit: InventoryItem?
-    var incomingItemCategory: Category?
-    var incomingItemCategoryIndex: Int?
+    var incomingData: CategorizedItem?
+    
+//    var incomingItemToEdit: InventoryItem?
+//    var incomingItemCategory: Category?
+//    var incomingItemCategoryIndex: Int?
     var masterDataSource: InventorizerTableViewDataSource?
     
     private static let storyboardIdentifier = "Main"
     private static let selfIdentifier = "InventoryItemViewController"
     
-    class func buildItemControllerWith(_ incomingItemToEdit: InventoryItem?, _ incomingItemCategory: Category?, _ incomingItemCategoryIndex: Int?) -> InventoryItemViewController? {
+    
+//    class func buildItemControllerWith(_ incomingItemToEdit: InventoryItem?, _ incomingItemCategory: Category?, _ incomingItemCategoryIndex: Int?) -> InventoryItemViewController? {
+//        let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
+//        guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
+//            return nil
+//        }
+//
+//        itemViewController.incomingItemToEdit = incomingItemToEdit
+//        itemViewController.incomingItemCategory = incomingItemCategory
+//        itemViewController.incomingItemCategoryIndex = incomingItemCategoryIndex
+//
+//        return itemViewController
+//    }
+    
+    class func buildItemControllerWith(_ incomingData: CategorizedItem?) -> InventoryItemViewController? {
         let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
         guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
             return nil
         }
         
-        itemViewController.incomingItemToEdit = incomingItemToEdit
-        itemViewController.incomingItemCategory = incomingItemCategory
-        itemViewController.incomingItemCategoryIndex = incomingItemCategoryIndex
+        itemViewController.incomingData = incomingData
         
         return itemViewController
     }
@@ -45,20 +59,20 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
 
         // Do any additional setup after loading the view.
         // load item information
-        if let unpackCurrentItem = incomingItemToEdit {
-            nameTextField.text = unpackCurrentItem.name
-            categoryTextField.text = unpackCurrentItem.category
-            notesTextView.text = unpackCurrentItem.notes
-            accountedForSwitch.setOn(unpackCurrentItem.accountedFor, animated: false)
+        if let unpackIncomingData = incomingData {
+            nameTextField.text = unpackIncomingData.item.name
+            categoryTextField.text = unpackIncomingData.item.category
+            notesTextView.text = unpackIncomingData.item.notes
+            accountedForSwitch.setOn(unpackIncomingData.item.accountedFor, animated: false)
             
-            if let unpackImage = unpackCurrentItem.image {
+            if let unpackImage = unpackIncomingData.item.image {
                 Utilities.updateImage(for: itemImageView, with: unpackImage)
             }
             else {
                 Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
             }
             
-            topNavBar.title = unpackCurrentItem.name
+            topNavBar.title = unpackIncomingData.item.name
         }
         
         // give notesTextView a border

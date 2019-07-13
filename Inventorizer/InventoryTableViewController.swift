@@ -181,9 +181,10 @@ class InventoryTableViewController: UIViewController {
             }
             
             searchController.isActive = false
-            item.incomingItemToEdit = dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row)
-            item.incomingItemCategory = dataSource.itemsByCategory[indexPath.section]
-            item.incomingItemCategoryIndex = indexPath.section
+//            item.incomingItemToEdit = dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row)
+//            item.incomingItemCategory = dataSource.itemsByCategory[indexPath.section]
+//            item.incomingItemCategoryIndex = indexPath.section
+            item.incomingData = CategorizedItem(item: dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row), indexedCategory: IndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)
         }
@@ -203,17 +204,11 @@ class InventoryTableViewController: UIViewController {
     
     @IBAction func didUnwindSaveFromItem (_ sender: UIStoryboardSegue) {
         // only continue if we are unwinding from InventoryItemViewController
-        guard let item = sender.source as? InventoryItemViewController else {
+        guard sender.source is InventoryItemViewController else {
             return
         }
         
-        
-        
         self.mainTable.reloadData()
-    }
-    
-    @IBAction func didUnwindCancelFromItem(_ sender: UIStoryboardSegue) {
-        return
     }
     
     // MARK: End Unwind funcs    
@@ -222,12 +217,6 @@ class InventoryTableViewController: UIViewController {
 // MARK: UITableViewDelegate extension
 extension InventoryTableViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-//        if tableView == mainTable {
-//            mainTableView(tableView, didSelectRowAt: didSelectRowAt)
-//        }
-//        else {
-//            searchTableView(tableView, didSelectRowAt: didSelectRowAt)
-//        }
         // only if in normal mode
         if tableView.isEditing == false {
             performSegue(withIdentifier: "EditItemSegue", sender: self)
@@ -240,22 +229,6 @@ extension InventoryTableViewController: UITableViewDelegate {
             }
         }
     }
-    
-    func mainTableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-        
-    }
-    
-//    func searchTableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-//        let selectedItemCategoryIndex = didSelectRowAt.section
-//        let selectedItemCategory = resultsController.dataSource.itemsByCategory[selectedItemCategoryIndex]
-//        let selectedItem = selectedItemCategory.getItem(at: didSelectRowAt.row)
-//
-//        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, selectedItemCategory, selectedItemCategoryIndex) else {
-//            return
-//        }
-//
-//        navigationController?.pushViewController(itemViewController, animated: true)
-//    }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
@@ -301,6 +274,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         }
         
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
+        var i = 0
         
         for category in dataSource.itemsByCategory {
             let arrayToFilter = category.getItems() as NSArray
@@ -309,8 +283,10 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             if results.count > 0 {
                 let resultsCategory = Category(name: category.getName(), initialItems: results)
                 resultsController.dataSource.itemsByCategory.append(resultsCategory)
-                resultsController.resultsToWholeCategoryMap[resultsCategory] = category
+                resultsController.resultsToWholeCategoryMap[resultsCategory] = IndexedCategory(category: category, index: i)
             }
+            
+            i += 1
         }
         
         resultsController.dataSource.itemsByCategory.sort()

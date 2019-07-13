@@ -12,8 +12,7 @@ class SearchResultsTableViewController: UITableViewController {
     var dataSource: InventorizerTableViewDataSource!
     var masterDataSource: InventorizerTableViewDataSource?
     var baseNavigationController: UINavigationController?
-    var resultsToWholeCategoryMap = [Category: Category]()
-     
+    var resultsToWholeCategoryMap = [Category: IndexedCategory]()
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,7 +34,14 @@ class SearchResultsTableViewController: UITableViewController {
         let selectedItemCategory = dataSource.itemsByCategory[selectedItemCategoryIndex]
         let selectedItem = selectedItemCategory.getItem(at: didSelectRowAt.row)
         
-        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, resultsToWholeCategoryMap[selectedItemCategory], selectedItemCategoryIndex) else {
+//        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, resultsToWholeCategoryMap[selectedItemCategory], selectedItemCategoryIndex) else {
+//            return
+//        }
+        guard let actualCategory = resultsToWholeCategoryMap[selectedItemCategory] else {
+            return
+        }
+        
+        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(CategorizedItem(item: selectedItem, indexedCategory: actualCategory)) else {
             return
         }
         itemViewController.masterDataSource = masterDataSource
