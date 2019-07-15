@@ -18,30 +18,16 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet weak var accountedForSwitch: UISwitch!
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var topNavBar: UINavigationItem!
+    @IBOutlet var cancelButton: UIBarButtonItem!
+    @IBOutlet var saveButton: UIBarButtonItem!
     
     var incomingData: CategorizedItem?
-    
-//    var incomingItemToEdit: InventoryItem?
-//    var incomingItemCategory: Category?
-//    var incomingItemCategoryIndex: Int?
     var masterDataSource: InventorizerTableViewDataSource?
+    
+    var editMode = true
     
     private static let storyboardIdentifier = "Main"
     private static let selfIdentifier = "InventoryItemViewController"
-    
-    
-//    class func buildItemControllerWith(_ incomingItemToEdit: InventoryItem?, _ incomingItemCategory: Category?, _ incomingItemCategoryIndex: Int?) -> InventoryItemViewController? {
-//        let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
-//        guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
-//            return nil
-//        }
-//
-//        itemViewController.incomingItemToEdit = incomingItemToEdit
-//        itemViewController.incomingItemCategory = incomingItemCategory
-//        itemViewController.incomingItemCategoryIndex = incomingItemCategoryIndex
-//
-//        return itemViewController
-//    }
     
     class func buildItemControllerWith(_ incomingData: CategorizedItem?) -> InventoryItemViewController? {
         let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
@@ -72,7 +58,12 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
                 Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
             }
             
+            // modify the top bar, change title and buttons
             topNavBar.title = unpackIncomingData.item.name
+            setEditMode(false)
+        }
+        else {
+            Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
         }
         
         // give notesTextView a border
@@ -115,6 +106,30 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         view.endEditing(true)
     }
     
+    @objc func editPressed() {
+        setEditMode(true)
+    }
+    
+    func setEditMode(_ editMode: Bool) {
+        self.editMode = editMode
+        
+        nameTextField.isEnabled = editMode
+        categoryTextField.isEnabled = editMode
+        notesTextView.isEditable = editMode
+        notesTextView.isSelectable = editMode
+        accountedForSwitch.isEnabled = editMode
+        
+        if editMode {            
+            topNavBar.setLeftBarButton(cancelButton, animated: true)
+            topNavBar.setRightBarButton(saveButton, animated: true)
+        }
+        else {
+            topNavBar.setLeftBarButton(nil, animated: true)
+            let editButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editPressed))
+            topNavBar.setRightBarButton(editButton, animated: true)
+        }
+    }
+    
     // UITextFieldDelegate func
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -142,6 +157,11 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     }
     
     @IBAction func photoTapped(_ sender: UITapGestureRecognizer) {
+        // only allow editing of photo if we are in edit mode
+        if editMode == false {
+            return
+        }
+        
         let imgPicker = UIImagePickerController()
         imgPicker.delegate = self
         
@@ -171,6 +191,11 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     }
     
     @IBAction func photoLongPressed(_ sender: UITapGestureRecognizer) {
+        // only allow editing of photo if we are in edit mode
+        if editMode == false {
+            return
+        }
+        
         guard let image = itemImageView.image else {
             return
         }

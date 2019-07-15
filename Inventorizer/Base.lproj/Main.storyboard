@@ -103,9 +103,8 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="DWA-TA-kmF">
                                         <rect key="frame" x="10" y="10" width="394" height="683.5"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Photo" translatesAutoresizingMaskIntoConstraints="NO" id="VmZ-Su-KxT">
+                                            <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="VmZ-Su-KxT">
                                                 <rect key="frame" x="0.0" y="0.0" width="394" height="394"/>
-                                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="VmZ-Su-KxT" secondAttribute="height" multiplier="1:1" id="nrV-rM-or5"/>
@@ -197,12 +196,14 @@
                     </navigationItem>
                     <connections>
                         <outlet property="accountedForSwitch" destination="w2T-g3-WKt" id="1IQ-3B-HQg"/>
+                        <outlet property="cancelButton" destination="1m2-9d-uPe" id="ulI-di-gBn"/>
                         <outlet property="categoryTextField" destination="zqC-81-RHr" id="wPL-EW-0ib"/>
                         <outlet property="itemImageView" destination="VmZ-Su-KxT" id="FrH-AM-ICb"/>
                         <outlet property="mainScrollView" destination="odl-Dr-Qhj" id="9em-Gt-zss"/>
                         <outlet property="nameTextField" destination="tgt-9v-Vnw" id="EQ9-hX-lwt"/>
                         <outlet property="navigationItem" destination="kMr-7q-XFz" id="C4j-IX-0pq"/>
                         <outlet property="notesTextView" destination="7Ud-MN-Fca" id="L4f-cT-7if"/>
+                        <outlet property="saveButton" destination="3zo-uB-cAE" id="GZo-5g-VmP"/>
                         <outlet property="topNavBar" destination="kMr-7q-XFz" id="Lqf-7g-q9Y"/>
                     </connections>
                 </viewController>
@@ -240,9 +241,6 @@
             <point key="canvasLocation" x="47.826086956521742" y="20.758928571428569"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="Photo" width="120" height="120"/>
-    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="f99-6D-J8q"/>
     </inferredMetricsTieBreakers>

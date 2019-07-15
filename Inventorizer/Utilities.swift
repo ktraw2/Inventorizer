@@ -41,8 +41,9 @@ class Utilities {
     }
     
     static func updateImage(for imageView: UIImageView, with imageOptional: UIImage?) {
-        guard let image = imageOptional else {
-            return
+        var image = defaultPlaceholderImage
+        if let unpackedImage = imageOptional {
+            image = unpackedImage
         }
         
         imageView.image = image
