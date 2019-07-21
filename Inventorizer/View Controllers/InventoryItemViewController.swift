@@ -21,7 +21,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet var cancelButton: UIBarButtonItem!
     @IBOutlet var saveButton: UIBarButtonItem!
     
-    var incomingData: CDCategorizedItem?
+    var incomingItem: CDItem?
     var masterDataSource: InventorizerTableViewDataSource?
     
     var editMode = true
@@ -29,13 +29,13 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     private static let storyboardIdentifier = "Main"
     private static let selfIdentifier = "InventoryItemViewController"
     
-    class func buildItemControllerWith(_ incomingData: CDCategorizedItem?) -> InventoryItemViewController? {
+    class func buildItemControllerWith(_ incomingItem: CDItem?) -> InventoryItemViewController? {
         let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
         guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
             return nil
         }
         
-        itemViewController.incomingData = incomingData
+        itemViewController.incomingItem = incomingItem
         
         return itemViewController
     }
@@ -45,22 +45,20 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
 
         // Do any additional setup after loading the view.
         // load item information
-        if let unpackIncomingData = incomingData {
-            nameTextField.text = unpackIncomingData.item.name
-            categoryTextField.text = unpackIncomingData.item.category.name
-            notesTextView.text = unpackIncomingData.item.notes
-            accountedForSwitch.setOn(unpackIncomingData.item.accountedFor, animated: false)
+        if let unpackIncomingItem = incomingItem {
+            nameTextField.text = unpackIncomingItem.name
+            categoryTextField.text = unpackIncomingItem.categoryName
+            notesTextView.text = unpackIncomingItem.notes
+            accountedForSwitch.setOn(unpackIncomingItem.accountedFor, animated: false)
             
-            if let unpackImage = unpackIncomingData.item.image {
-                // TODO: Images
-                Utilities.updateImage(for: itemImageView, with: nil)
+            if let unpackImage = unpackIncomingItem.image {
+                Utilities.updateImage(for: itemImageView, with: unpackImage)
             }
             else {
                 Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
             }
             
-            // modify the top bar, change title and buttons
-            topNavBar.title = unpackIncomingData.item.name
+            topNavBar.title = unpackIncomingItem.name
             setEditMode(false)
         }
         else {

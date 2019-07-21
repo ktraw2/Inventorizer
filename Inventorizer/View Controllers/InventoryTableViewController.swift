@@ -28,8 +28,7 @@ class InventoryTableViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
         // initialize the data source and set the table's data source to it
-        dataSource = InventorizerTableViewDataSource()
-        mainTable.dataSource = dataSource
+        dataSource = InventorizerTableViewDataSource(assignedTo: mainTable)
         
         // make the button bar for when no editing is happening
         buttonsNotEditing = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editToogleTapped(_:)))]
@@ -165,11 +164,10 @@ class InventoryTableViewController: UIViewController {
             return
         }
         
+        
         // code to mark all
         for indexPath in indexPaths {
-            guard let item = dataSource.itemsByCategory[indexPath.section].items.object(at: indexPath.row) as? CDItem else {
-                continue
-            }
+            let item = dataSource.fetchedResultsController.object(at: indexPath)
             
             item.accountedFor = value
         }
@@ -181,14 +179,12 @@ class InventoryTableViewController: UIViewController {
     }
     
     func markAll(as value: Bool, for sender: UIBarButtonItem) {
-        for category in dataSource.itemsByCategory {
-            guard let items = category.items.array as? [CDItem] else {
-                continue
-            }
-            
-            for item in items {
-                item.accountedFor = value
-            }
+        guard let objects = dataSource.fetchedResultsController.fetchedObjects else {
+            return
+        }
+        
+        for item in objects {
+            item.accountedFor = value
         }
         
         dataSource.saveData()
@@ -218,12 +214,11 @@ class InventoryTableViewController: UIViewController {
             guard let item = segue.destination as? InventoryItemViewController else {
                 return
             }
-            guard let selectedItem = dataSource.itemsByCategory[indexPath.section].items.object(at: indexPath.row) as? CDItem else {
-                return
-            }
+            let selectedItem = dataSource.fetchedResultsController.object(at: indexPath)
             
             searchController.isActive = false
-            item.incomingData = CDCategorizedItem(item: selectedItem, indexedCategory: CDIndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
+            item.incomingItem = selectedItem
+//            item.incomingData = CDCategorizedItem(item: selectedItem, indexedCategory: CDIndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)
         }
@@ -247,7 +242,7 @@ class InventoryTableViewController: UIViewController {
             return
         }
         
-        self.mainTable.reloadData()
+//        self.mainTable.reloadData()
     }
     // MARK: End Unwind funcs    
 }
@@ -297,7 +292,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             return
         }
         
-        resultsController.dataSource.itemsByCategory = [CDCategory]()
+        //resultsController.dataSource.itemsByCategory = [CDCategory]()
         
         // display nothing if no query is entered
         if searchQuery == "" {
@@ -316,23 +311,23 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
         var i = 0
         
-        for category in dataSource.itemsByCategory {
-            let arrayToFilter = category.items.array as NSArray
-            let results = arrayToFilter.filtered(using: compoundPredicate) as! [CDItem]
-            
-            if results.count > 0 {
-                let resultsCategory = CDCategory()
-                resultsCategory.name = category.name
-                resultsCategory.items = NSOrderedSet(array: results)
-                
-                resultsController.dataSource.itemsByCategory.append(resultsCategory)
-                resultsController.resultsToWholeCategoryMap[resultsCategory] = CDIndexedCategory(category: category, index: i)
-            }
-            
-            i += 1
-        }
+//        for category in dataSource.itemsByCategory {
+//            let arrayToFilter = category.items.array as NSArray
+//            let results = arrayToFilter.filtered(using: compoundPredicate) as! [CDItem]
+//
+//            if results.count > 0 {
+//                let resultsCategory = CDCategory()
+//                resultsCategory.name = category.name
+//                resultsCategory.items = NSOrderedSet(array: results)
+//
+//                resultsController.dataSource.itemsByCategory.append(resultsCategory)
+//                resultsController.resultsToWholeCategoryMap[resultsCategory] = CDIndexedCategory(category: category, index: i)
+//            }
+//
+//            i += 1
+//        }
         
-        resultsController.dataSource.itemsByCategory.sort()
+        //resultsController.dataSource.itemsByCategory.sort()
         resultsController.tableView.reloadData()
 //        let arrayToFiter = dataSource.itemsByCategory as NSArray
 //        resultsController.dataSource.itemsByCategory = arrayToFiter.filtered(using: categoryPredicate) as! [Category]
