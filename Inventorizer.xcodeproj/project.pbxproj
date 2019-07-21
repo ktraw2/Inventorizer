@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1931BD22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931BB22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld */; };
+		0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931E722E4258F0001C767 /* CoreDataService.swift */; };
+		0A1931ED22E4289A0001C767 /* CDCategory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931E922E4289A0001C767 /* CDCategory+CoreDataClass.swift */; };
+		0A1931EE22E4289A0001C767 /* CDCategory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EA22E4289A0001C767 /* CDCategory+CoreDataProperties.swift */; };
+		0A1931EF22E4289A0001C767 /* CDItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */; };
+		0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */; };
 		0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */; };
 		0A8189F422CFBBD800168C02 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189F322CFBBD800168C02 /* Category.swift */; };
 		0A8189F622CFC2E200168C02 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189F522CFC2E200168C02 /* Utilities.swift */; };
@@ -16,7 +22,7 @@
 		0AC30F6022CD940C004A8525 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F5E22CD940C004A8525 /* Main.storyboard */; };
 		0AC30F6222CD940D004A8525 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6122CD940D004A8525 /* Assets.xcassets */; };
 		0AC30F6522CD940D004A8525 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */; };
-		0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */; };
+		0AC30F6D22CDA1D2004A8525 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC30F6C22CDA1D2004A8525 /* Item.swift */; };
 		0AD6C18922D9B4EB00AB703D /* InventorizerTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */; };
 		0AE65EFC22D3126500EDDF83 /* SearchResultsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */; };
 /* End PBXBuildFile section */
@@ -32,6 +38,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A1931BC22E41FEB0001C767 /* InventorizerDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = InventorizerDataModel.xcdatamodel; sourceTree = "<group>"; };
+		0A1931E722E4258F0001C767 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		0A1931E922E4289A0001C767 /* CDCategory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDCategory+CoreDataClass.swift"; sourceTree = "<group>"; };
+		0A1931EA22E4289A0001C767 /* CDCategory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDCategory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataClass.swift"; sourceTree = "<group>"; };
+		0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItemViewController.swift; sourceTree = "<group>"; };
 		0A8189F322CFBBD800168C02 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		0A8189F522CFC2E200168C02 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
@@ -40,12 +52,12 @@
 		0A818A0122CFC39C00168C02 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AC30F5722CD940C004A8525 /* Inventorizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Inventorizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AC30F5A22CD940C004A8525 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.swift; name = InventoryTableViewController.swift; path = Inventorizer/InventoryTableViewController.swift; sourceTree = SOURCE_ROOT; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
+		0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */ = {isa = PBXFileReference; indentWidth = 4; lastKnownFileType = sourcecode.swift; name = InventoryTableViewController.swift; path = "Inventorizer/View Controllers/InventoryTableViewController.swift"; sourceTree = SOURCE_ROOT; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
 		0AC30F5F22CD940C004A8525 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0AC30F6122CD940D004A8525 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0AC30F6422CD940D004A8525 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0AC30F6622CD940D004A8525 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItem.swift; sourceTree = "<group>"; };
+		0AC30F6C22CDA1D2004A8525 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InventorizerTableViewDataSource.swift; sourceTree = "<group>"; };
 		0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -68,6 +80,56 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A1931F322E42A7C0001C767 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */,
+				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
+				0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		0A1931F422E42AA90001C767 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				0A1931BB22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld */,
+				0A1931E922E4289A0001C767 /* CDCategory+CoreDataClass.swift */,
+				0A1931EA22E4289A0001C767 /* CDCategory+CoreDataProperties.swift */,
+				0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */,
+				0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */,
+			);
+			path = "Core Data";
+			sourceTree = "<group>";
+		};
+		0A1931F522E42B4B0001C767 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0A8189F522CFC2E200168C02 /* Utilities.swift */,
+				0A1931E722E4258F0001C767 /* CoreDataService.swift */,
+				0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		0A1931F622E42B660001C767 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				0AC30F5E22CD940C004A8525 /* Main.storyboard */,
+				0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		0A1931F722E42B8B0001C767 /* Legacy Objects */ = {
+			isa = PBXGroup;
+			children = (
+				0AC30F6C22CDA1D2004A8525 /* Item.swift */,
+				0A8189F322CFBBD800168C02 /* Category.swift */,
+			);
+			path = "Legacy Objects";
+			sourceTree = "<group>";
+		};
 		0A8189FE22CFC39C00168C02 /* InventorizerTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -98,18 +160,14 @@
 		0AC30F5922CD940C004A8525 /* Inventorizer */ = {
 			isa = PBXGroup;
 			children = (
-				0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */,
+				0A1931F722E42B8B0001C767 /* Legacy Objects */,
+				0A1931F622E42B660001C767 /* Storyboards */,
+				0A1931F522E42B4B0001C767 /* Utilities */,
+				0A1931F422E42AA90001C767 /* Core Data */,
+				0A1931F322E42A7C0001C767 /* View Controllers */,
 				0AC30F5A22CD940C004A8525 /* AppDelegate.swift */,
-				0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */,
-				0AC30F5E22CD940C004A8525 /* Main.storyboard */,
 				0AC30F6122CD940D004A8525 /* Assets.xcassets */,
-				0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */,
 				0AC30F6622CD940D004A8525 /* Info.plist */,
-				0AC30F6C22CDA1D2004A8525 /* InventoryItem.swift */,
-				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
-				0A8189F322CFBBD800168C02 /* Category.swift */,
-				0A8189F522CFC2E200168C02 /* Utilities.swift */,
-				0AE65EFB22D3126500EDDF83 /* SearchResultsTableViewController.swift */,
 			);
 			path = Inventorizer;
 			sourceTree = "<group>";
@@ -224,13 +282,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */,
 				0A8189F622CFC2E200168C02 /* Utilities.swift in Sources */,
 				0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */,
 				0A8189F422CFBBD800168C02 /* Category.swift in Sources */,
-				0AC30F6D22CDA1D2004A8525 /* InventoryItem.swift in Sources */,
+				0AC30F6D22CDA1D2004A8525 /* Item.swift in Sources */,
+				0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */,
 				0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */,
+				0A1931EE22E4289A0001C767 /* CDCategory+CoreDataProperties.swift in Sources */,
+				0A1931BD22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld in Sources */,
+				0A1931EF22E4289A0001C767 /* CDItem+CoreDataClass.swift in Sources */,
 				0AD6C18922D9B4EB00AB703D /* InventorizerTableViewDataSource.swift in Sources */,
 				0AE65EFC22D3126500EDDF83 /* SearchResultsTableViewController.swift in Sources */,
+				0A1931ED22E4289A0001C767 /* CDCategory+CoreDataClass.swift in Sources */,
 				0AC30F5B22CD940C004A8525 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -490,6 +554,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		0A1931BB22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0A1931BC22E41FEB0001C767 /* InventorizerDataModel.xcdatamodel */,
+			);
+			currentVersion = 0A1931BC22E41FEB0001C767 /* InventorizerDataModel.xcdatamodel */;
+			path = InventorizerDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 0AC30F4F22CD940C004A8525 /* Project object */;
 }

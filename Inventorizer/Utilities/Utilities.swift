@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 
 class Utilities {
+    
+    private init() {}
+    
     static let defaultPlaceholderImage = UIImage(named: "Photo")
     
     static func binarySearch<T:Comparable>(array: Array<T>, item: T) -> Int? {

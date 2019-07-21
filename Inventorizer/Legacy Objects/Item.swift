@@ -8,17 +8,17 @@
 
 import Foundation
 import UIKit
-class InventoryItem: NSObject, NSCoding, Comparable {
-    static func < (lhs: InventoryItem, rhs: InventoryItem) -> Bool {
+class Item: NSObject, NSCoding, Comparable {
+    static func < (lhs: Item, rhs: Item) -> Bool {
         return lhs.name < rhs.name
     }
     
-    static func == (lhs: InventoryItem, rhs: InventoryItem) -> Bool {
+    static func == (lhs: Item, rhs: Item) -> Bool {
         return lhs.name == rhs.name
     }
     
     override func isEqual(_ object: Any?) -> Bool {
-        guard let castedObject = object as? InventoryItem else {
+        guard let castedObject = object as? Item else {
             return false
         }
         

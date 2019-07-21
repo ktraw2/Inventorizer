@@ -18,7 +18,7 @@ class Category: NSObject, NSCoding, Comparable {
             return nil
         }
         
-        guard let items = aDecoder.decodeObject(forKey: PropertyKey.items) as? [InventoryItem] else {
+        guard let items = aDecoder.decodeObject(forKey: PropertyKey.items) as? [Item] else {
             return nil
         }
         
@@ -46,25 +46,25 @@ class Category: NSObject, NSCoding, Comparable {
     }
     
     private var name: String
-    private var items: [InventoryItem]
+    private var items: [Item]
     
-    init(name: String, initialItems: [InventoryItem]? = nil) {
+    init(name: String, initialItems: [Item]? = nil) {
         self.name = name
         
         if let unpackedInitialItems = initialItems {
             self.items = unpackedInitialItems
         }
         else {
-            self.items = [InventoryItem]()
+            self.items = [Item]()
         }
     }
     
-    public func add(item: InventoryItem) {
+    public func add(item: Item) {
         items.append(item)
         items.sort()
     }
     
-    public func remove(item: InventoryItem) {
+    public func remove(item: Item) {
         let foundIndex = Utilities.binarySearch(array: items, item: item)
         guard let removalIndex = foundIndex else {
             return
@@ -77,7 +77,7 @@ class Category: NSObject, NSCoding, Comparable {
         items.remove(at: at)
     }
     
-    public func update(itemAt index: Int, with newItem: InventoryItem) {
+    public func update(itemAt index: Int, with newItem: Item) {
         if items[index] == newItem {
             items[index] = newItem
         }
@@ -87,7 +87,7 @@ class Category: NSObject, NSCoding, Comparable {
         return name
     }
     
-    public func getItems() -> [InventoryItem] {
+    public func getItems() -> [Item] {
         return items
     }
     
@@ -95,7 +95,7 @@ class Category: NSObject, NSCoding, Comparable {
         return items.count
     }
     
-    public func getItem(at index: Int) -> InventoryItem {
+    public func getItem(at index: Int) -> Item {
         return items[index]
     }
     
@@ -111,6 +111,6 @@ struct IndexedCategory {
 }
 
 struct CategorizedItem {
-    var item: InventoryItem
+    var item: Item
     var indexedCategory: IndexedCategory
 }

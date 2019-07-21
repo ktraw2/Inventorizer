@@ -310,7 +310,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         
         for category in dataSource.itemsByCategory {
             let arrayToFilter = category.getItems() as NSArray
-            let results = arrayToFilter.filtered(using: compoundPredicate) as! [InventoryItem]
+            let results = arrayToFilter.filtered(using: compoundPredicate) as! [Item]
             
             if results.count > 0 {
                 let resultsCategory = Category(name: category.getName(), initialItems: results)

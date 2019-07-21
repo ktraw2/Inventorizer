@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14490.99" systemVersion="18F132" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDCategory" representedClassName="CDCategory" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="CDItem" inverseName="category" inverseEntity="CDItem" syncable="YES"/>
+    </entity>
+    <entity name="CDItem" representedClassName="CDItem" syncable="YES">
+        <attribute name="accountedFor" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDCategory" inverseName="items" inverseEntity="CDCategory" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="CDCategory" positionX="-317.5625" positionY="-73.12109375" width="129.46484375" height="73"/>
+        <element name="CDItem" positionX="-31.1875" positionY="-15.9140625" width="128" height="118"/>
+    </elements>
+</model>

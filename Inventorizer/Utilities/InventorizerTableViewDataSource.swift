@@ -118,7 +118,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             image = item.itemImageView.image
         }
         
-        let newItem = InventoryItem(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
+        let newItem = Item(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
         
         // handle case where an item changes categories or name
         // if we are changing categories or names we risk colliding with an already existing object, so this variable keeps track of the risk
@@ -198,7 +198,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         sender.present(emptyNameError, animated: true)
     }
     
-    private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: InventoryItem) -> DataCommit {
+    private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: Item) -> DataCommit {
         
         guard let editedItem = commit.stagedItem, let editedCategory = commit.stagedCategory else {
             return commit
@@ -261,7 +261,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
     
     private struct DataCommit {
         var stagedCategory: IndexedCategory?
-        var stagedItem: InventoryItem?
+        var stagedItem: Item?
         
         var mustKeepCategory: Bool
         
