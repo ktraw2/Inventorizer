@@ -8,37 +8,46 @@
 
 import Foundation
 import UIKit
+import CoreData
 
 class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
-    // constants for saving and loading
-    static private let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
-    
-    private let archiveURL: URL?
-    var itemsByCategory: [Category]
+
+    //var itemsByCategory: [CDCategory]
+    var fetchedResultsController: NSFetchedResultsController<CDItem>
     var sectionWasRemoved = false
     
     override init() {
-        archiveURL = nil
-        itemsByCategory = [Category]()
+        let fetchRequest: NSFetchRequest<CDItem> = CDItem.fetchRequest()
+        let categorySorting = NSSortDescriptor(key: "category.name", ascending: true)
+        let nameSorting = NSSortDescriptor(key: "name", ascending: true)
+        fetchRequest.sortDescriptors = [categorySorting, nameSorting]
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataService.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+//        do {
+//            let itemsByCategory = try CoreDataService.context.fetch(fetchRequest)
+//            self.itemsByCategory = itemsByCategory
+//        }
+//        catch {
+//            fatalError("Error!")
+//        }
+        
         super.init()
-    }
-    
-    init(archiveName: String) {
-        archiveURL = InventorizerTableViewDataSource.documentsDirectory.appendingPathComponent(archiveName)
-        itemsByCategory = [Category]() // lol swift
-        super.init()
-        itemsByCategory = loadData()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
-        cell.textLabel?.text = itemsByCategory[indexPath.section].getItem(at: indexPath.row).name
+        guard let item = itemsByCategory[indexPath.section].items.object(at: indexPath.row) as? CDItem else {
+            cell.textLabel?.text = "ERROR"
+            return cell
+        }
         
-        return(cell)
+        cell.textLabel?.text = item.name
+        
+        return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsByCategory[section].numOfItems()
+        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
     
     func numberOfSections(in: UITableView) -> Int {
@@ -49,20 +58,20 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         var result = [String]()
         
         for category in itemsByCategory {
-            let name = category.getName()
-            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numOfItems()))")
+            let name = category.name
+            result.append("\((name == "") ? "Uncategorized" : name) (\(category.items.count))")
         }
         
         return result
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let name = itemsByCategory[section].getName()
+        let name = itemsByCategory[section].name
         return "\((name == "") ? "Uncategorized" : name)"
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let num = itemsByCategory[section].numOfItems()
+        let num = itemsByCategory[section].items.count
         return "\(num) item\((num == 1) ? "" : "s")"
     }
     
@@ -72,12 +81,14 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             // remove the item
             tableView.beginUpdates()
             let category = itemsByCategory[indexPath.section]
-            category.remove(at: indexPath.row)
+            category.removeFromItems(at: indexPath.row)
+            CoreDataService.context.delete(category)
             tableView.deleteRows(at: [indexPath], with: .automatic)
             
             // remove the category if it's empty
-            if category.numOfItems() == 0 {
+            if category.items.count == 0 {
                 itemsByCategory.remove(at: indexPath.section)
+                CoreDataService.context.delete(category)
                 sectionWasRemoved = true
                 tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
@@ -118,7 +129,11 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             image = item.itemImageView.image
         }
         
-        let newItem = Item(name: name, category: category, notes: notes, image: image, accountedFor: item.accountedForSwitch.isOn)
+        let newItem = CDItem(context: CoreDataService.context)
+        newItem.name = name
+        newItem.notes = notes
+        // TODO: Add image here
+        newItem.accountedFor = item.accountedForSwitch.isOn
         
         // handle case where an item changes categories or name
         // if we are changing categories or names we risk colliding with an already existing object, so this variable keeps track of the risk
@@ -138,10 +153,17 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         }
         
         // bsearch for category
-        let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: Category(name: category))
+        let dummyCategory = CDCategory(context: CoreDataService.context)
+        dummyCategory.name = category
+        
+        let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: dummyCategory)
+        print(categoryIndex)
+        
+        CoreDataService.context.delete(dummyCategory)
+        
         if let existingCategoryIndex = categoryIndex {
             // bsearch for item
-            let itemIndex = Utilities.binarySearch(array: itemsByCategory[existingCategoryIndex].getItems(), item: newItem)
+            let itemIndex = Utilities.binarySearch(array: itemsByCategory[existingCategoryIndex].items.array as! [CDItem], item: newItem)
             if let existingItemIndex = itemIndex {
                 // determine if we are about to collide with an object that isn't the one we edited
                 if itemIsChangingKeyData {
@@ -153,17 +175,25 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                         dataCommit.shiftedItemIndex = existingItemIndex
                         dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                         
-                        self.itemsByCategory[dataCommit.shiftedCategoryIndex].update(itemAt: dataCommit.shiftedItemIndex, with: newItem)
+                        let category = self.itemsByCategory[dataCommit.shiftedCategoryIndex]
+                        newItem.category = category
+                        
+                        category.replaceItems(at: dataCommit.shiftedItemIndex, with: newItem)
                         self.saveData()
                         function?()
                     }))
                     
-                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "No", style: .cancel, handler: {(_) in
+                        CoreDataService.context.delete(newItem)
+                    }))
                     
                     item.present(aboutToOverwriteWarning, animated: true)
                 }
                 else {
-                    itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
+                    let category = itemsByCategory[existingCategoryIndex]
+                    newItem.category = category
+                    
+                    category.replaceItems(at: existingItemIndex, with: newItem)
                     saveData()
                     function?()
                 }
@@ -174,7 +204,10 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 dataCommit.mustKeepCategory = true
                 dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                 
-                itemsByCategory[dataCommit.shiftedCategoryIndex].add(item: newItem)
+                let category = itemsByCategory[dataCommit.shiftedCategoryIndex]
+                newItem.category = category
+                
+                category.addToItems(newItem)
                 saveData()
                 function?()
             }
@@ -183,7 +216,12 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             // category is not there, append a new category and sort
             dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
             
-            itemsByCategory.append(Category(name: category, initialItems: [newItem]))
+            let newCategory = CDCategory(context: CoreDataService.context)
+            newCategory.name = category
+            newCategory.addToItems(newItem)
+            newItem.category = newCategory
+            
+            itemsByCategory.append(newCategory)
             itemsByCategory.sort()
             saveData()
             function?()
@@ -198,7 +236,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         sender.present(emptyNameError, animated: true)
     }
     
-    private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: Item) -> DataCommit {
+    private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: CDItem) -> DataCommit {
         
         guard let editedItem = commit.stagedItem, let editedCategory = commit.stagedCategory else {
             return commit
@@ -206,14 +244,14 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         
         var result = commit
         
-        if editedCategory.category == Category(name: newItem.category) && editedItem < newItem {
+        if editedCategory.category == newItem.category && editedItem < newItem {
             result.shiftedItemIndex -= 1
         }
         
-        editedCategory.category.remove(item: editedItem)
+        editedCategory.category.removeFromItems(editedItem)
         
-        if editedCategory.category.numOfItems() == 0 && commit.mustKeepCategory == false {
-            if editedCategory.category < Category(name: newItem.category) {
+        if editedCategory.category.items.count == 0 && commit.mustKeepCategory == false {
+            if editedCategory.category < newItem.category {
                 result.shiftedCategoryIndex -= 1
             }
             
@@ -224,44 +262,12 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
     }
     
     func saveData() {
-        guard let unwrappedArchiveURL = archiveURL else {
-            return
-        }
-        
-        do {
-            let encodedData = try NSKeyedArchiver.archivedData(withRootObject: self.itemsByCategory, requiringSecureCoding: false)
-        
-            try encodedData.write(to: unwrappedArchiveURL)
-        }
-        catch {
-            // TODO
-        }
-    }
-    
-    private func loadData() -> [Category] {
-        guard let unwrappedArchiveURL = archiveURL else {
-            return [Category]()
-        }
-        
-        do {
-            let data = try Data(contentsOf: unwrappedArchiveURL)
-            let unarchivedData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data)
-            
-            if let castedData = unarchivedData as? [Category] {
-                return castedData
-            }
-            else {
-                return [Category]()
-            }
-        }
-        catch {
-            return [Category]()
-        }
+        CoreDataService.saveContext()
     }
     
     private struct DataCommit {
-        var stagedCategory: IndexedCategory?
-        var stagedItem: Item?
+        var stagedCategory: CDIndexedCategory?
+        var stagedItem: CDItem?
         
         var mustKeepCategory: Bool
         

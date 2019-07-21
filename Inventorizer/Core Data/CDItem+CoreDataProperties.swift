@@ -17,10 +17,10 @@ extension CDItem {
         return NSFetchRequest<CDItem>(entityName: "CDItem")
     }
 
-    @NSManaged public var name: String?
+    @NSManaged public var name: String
     @NSManaged public var notes: String?
     @NSManaged public var accountedFor: Bool
     @NSManaged public var image: NSData?
-    @NSManaged public var category: CDCategory?
+    @NSManaged public var category: CDCategory
 
 }

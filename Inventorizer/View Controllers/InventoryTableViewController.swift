@@ -28,7 +28,7 @@ class InventoryTableViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
         // initialize the data source and set the table's data source to it
-        dataSource = InventorizerTableViewDataSource(archiveName: "itemsByCategory")
+        dataSource = InventorizerTableViewDataSource()
         mainTable.dataSource = dataSource
         
         // make the button bar for when no editing is happening
@@ -167,7 +167,11 @@ class InventoryTableViewController: UIViewController {
         
         // code to mark all
         for indexPath in indexPaths {
-            dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = value
+            guard let item = dataSource.itemsByCategory[indexPath.section].items.object(at: indexPath.row) as? CDItem else {
+                continue
+            }
+            
+            item.accountedFor = value
         }
         dataSource.saveData()
         
@@ -178,7 +182,11 @@ class InventoryTableViewController: UIViewController {
     
     func markAll(as value: Bool, for sender: UIBarButtonItem) {
         for category in dataSource.itemsByCategory {
-            for item in category.getItems() {
+            guard let items = category.items.array as? [CDItem] else {
+                continue
+            }
+            
+            for item in items {
                 item.accountedFor = value
             }
         }
@@ -210,12 +218,12 @@ class InventoryTableViewController: UIViewController {
             guard let item = segue.destination as? InventoryItemViewController else {
                 return
             }
+            guard let selectedItem = dataSource.itemsByCategory[indexPath.section].items.object(at: indexPath.row) as? CDItem else {
+                return
+            }
             
             searchController.isActive = false
-//            item.incomingItemToEdit = dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row)
-//            item.incomingItemCategory = dataSource.itemsByCategory[indexPath.section]
-//            item.incomingItemCategoryIndex = indexPath.section
-            item.incomingData = CategorizedItem(item: dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row), indexedCategory: IndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
+            item.incomingData = CDCategorizedItem(item: selectedItem, indexedCategory: CDIndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)
         }
@@ -289,7 +297,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             return
         }
         
-        resultsController.dataSource.itemsByCategory = [Category]()
+        resultsController.dataSource.itemsByCategory = [CDCategory]()
         
         // display nothing if no query is entered
         if searchQuery == "" {
@@ -309,13 +317,16 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         var i = 0
         
         for category in dataSource.itemsByCategory {
-            let arrayToFilter = category.getItems() as NSArray
-            let results = arrayToFilter.filtered(using: compoundPredicate) as! [Item]
+            let arrayToFilter = category.items.array as NSArray
+            let results = arrayToFilter.filtered(using: compoundPredicate) as! [CDItem]
             
             if results.count > 0 {
-                let resultsCategory = Category(name: category.getName(), initialItems: results)
+                let resultsCategory = CDCategory()
+                resultsCategory.name = category.name
+                resultsCategory.items = NSOrderedSet(array: results)
+                
                 resultsController.dataSource.itemsByCategory.append(resultsCategory)
-                resultsController.resultsToWholeCategoryMap[resultsCategory] = IndexedCategory(category: category, index: i)
+                resultsController.resultsToWholeCategoryMap[resultsCategory] = CDIndexedCategory(category: category, index: i)
             }
             
             i += 1

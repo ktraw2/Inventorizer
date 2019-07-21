@@ -21,7 +21,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet var cancelButton: UIBarButtonItem!
     @IBOutlet var saveButton: UIBarButtonItem!
     
-    var incomingData: CategorizedItem?
+    var incomingData: CDCategorizedItem?
     var masterDataSource: InventorizerTableViewDataSource?
     
     var editMode = true
@@ -29,7 +29,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     private static let storyboardIdentifier = "Main"
     private static let selfIdentifier = "InventoryItemViewController"
     
-    class func buildItemControllerWith(_ incomingData: CategorizedItem?) -> InventoryItemViewController? {
+    class func buildItemControllerWith(_ incomingData: CDCategorizedItem?) -> InventoryItemViewController? {
         let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
         guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
             return nil
@@ -47,12 +47,13 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         // load item information
         if let unpackIncomingData = incomingData {
             nameTextField.text = unpackIncomingData.item.name
-            categoryTextField.text = unpackIncomingData.item.category
+            categoryTextField.text = unpackIncomingData.item.category.name
             notesTextView.text = unpackIncomingData.item.notes
             accountedForSwitch.setOn(unpackIncomingData.item.accountedFor, animated: false)
             
             if let unpackImage = unpackIncomingData.item.image {
-                Utilities.updateImage(for: itemImageView, with: unpackImage)
+                // TODO: Images
+                Utilities.updateImage(for: itemImageView, with: nil)
             }
             else {
                 Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)

@@ -12,7 +12,7 @@ class SearchResultsTableViewController: UITableViewController {
     var dataSource: InventorizerTableViewDataSource!
     var masterDataSource: InventorizerTableViewDataSource?
     var baseNavigationController: UINavigationController?
-    var resultsToWholeCategoryMap = [Category: IndexedCategory]()
+    var resultsToWholeCategoryMap = [CDCategory: CDIndexedCategory]()
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -32,7 +32,9 @@ class SearchResultsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
         let selectedItemCategoryIndex = didSelectRowAt.section
         let selectedItemCategory = dataSource.itemsByCategory[selectedItemCategoryIndex]
-        let selectedItem = selectedItemCategory.getItem(at: didSelectRowAt.row)
+        guard let selectedItem = selectedItemCategory.items.object(at: didSelectRowAt.row) as? CDItem else {
+            return
+        }
         
 //        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(selectedItem, resultsToWholeCategoryMap[selectedItemCategory], selectedItemCategoryIndex) else {
 //            return
@@ -41,7 +43,7 @@ class SearchResultsTableViewController: UITableViewController {
             return
         }
         
-        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(CategorizedItem(item: selectedItem, indexedCategory: actualCategory)) else {
+        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(CDCategorizedItem(item: selectedItem, indexedCategory: actualCategory)) else {
             return
         }
         itemViewController.masterDataSource = masterDataSource

@@ -12,5 +12,17 @@ import CoreData
 
 @objc(CDItem)
 public class CDItem: NSManagedObject {
+//    override public var hash: Int {
+//        return name.hashValue
+//    }
+}
 
+extension CDItem: Comparable {
+    public static func < (lhs: CDItem, rhs: CDItem) -> Bool {
+        return lhs.name < rhs.name
+    }
+    
+    public static func == (lhs: CDItem, rhs: CDItem) -> Bool {
+        return lhs.name == rhs.name
+    }
 }
