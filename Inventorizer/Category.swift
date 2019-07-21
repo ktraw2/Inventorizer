@@ -7,7 +7,24 @@
 //
 
 import Foundation
-class Category: Comparable, Hashable {
+class Category: NSObject, NSCoding, Comparable {
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: PropertyKey.name)
+        aCoder.encode(items, forKey: PropertyKey.items)
+    }
+    
+    required convenience init?(coder aDecoder: NSCoder) {
+        guard let name = aDecoder.decodeObject(forKey: PropertyKey.name) as? String else {
+            return nil
+        }
+        
+        guard let items = aDecoder.decodeObject(forKey: PropertyKey.items) as? [InventoryItem] else {
+            return nil
+        }
+        
+        self.init(name: name, initialItems: items)
+    }
+    
     static func < (lhs: Category, rhs: Category) -> Bool {
         return lhs.name < rhs.name
     }
@@ -16,8 +33,16 @@ class Category: Comparable, Hashable {
         return lhs.name == rhs.name
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
+    override var hash: Int {
+        return name.hashValue
+    }
+    
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let rhs = object as? Category else {
+            return false
+        }
+        
+        return self == rhs
     }
     
     private var name: String
@@ -72,6 +97,11 @@ class Category: Comparable, Hashable {
     
     public func getItem(at index: Int) -> InventoryItem {
         return items[index]
+    }
+    
+    private struct PropertyKey {
+        static let name = "name"
+        static let items = "items"
     }
 }
 

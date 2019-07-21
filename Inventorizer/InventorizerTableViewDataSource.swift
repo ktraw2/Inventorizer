@@ -10,8 +10,25 @@ import Foundation
 import UIKit
 
 class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
-    var itemsByCategory = [Category]()
+    // constants for saving and loading
+    static private let documentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    
+    private let archiveURL: URL?
+    var itemsByCategory: [Category]
     var sectionWasRemoved = false
+    
+    override init() {
+        archiveURL = nil
+        itemsByCategory = [Category]()
+        super.init()
+    }
+    
+    init(archiveName: String) {
+        archiveURL = InventorizerTableViewDataSource.documentsDirectory.appendingPathComponent(archiveName)
+        itemsByCategory = [Category]() // lol swift
+        super.init()
+        itemsByCategory = loadData()
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: UITableViewCell.CellStyle.default, reuseIdentifier: "cell")
@@ -65,6 +82,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
             }
             tableView.endUpdates()
+            saveData()
         }
     }
     
@@ -136,6 +154,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                         dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                         
                         self.itemsByCategory[dataCommit.shiftedCategoryIndex].update(itemAt: dataCommit.shiftedItemIndex, with: newItem)
+                        self.saveData()
                         function?()
                     }))
                     
@@ -145,6 +164,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 }
                 else {
                     itemsByCategory[existingCategoryIndex].update(itemAt: existingItemIndex, with: newItem)
+                    saveData()
                     function?()
                 }
             }
@@ -155,6 +175,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
                 dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
                 
                 itemsByCategory[dataCommit.shiftedCategoryIndex].add(item: newItem)
+                saveData()
                 function?()
             }
         }
@@ -164,6 +185,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             
             itemsByCategory.append(Category(name: category, initialItems: [newItem]))
             itemsByCategory.sort()
+            saveData()
             function?()
         }
     }
@@ -199,6 +221,42 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         }
         
         return result
+    }
+    
+    func saveData() {
+        guard let unwrappedArchiveURL = archiveURL else {
+            return
+        }
+        
+        do {
+            let encodedData = try NSKeyedArchiver.archivedData(withRootObject: self.itemsByCategory, requiringSecureCoding: false)
+        
+            try encodedData.write(to: unwrappedArchiveURL)
+        }
+        catch {
+            // TODO
+        }
+    }
+    
+    private func loadData() -> [Category] {
+        guard let unwrappedArchiveURL = archiveURL else {
+            return [Category]()
+        }
+        
+        do {
+            let data = try Data(contentsOf: unwrappedArchiveURL)
+            let unarchivedData = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data)
+            
+            if let castedData = unarchivedData as? [Category] {
+                return castedData
+            }
+            else {
+                return [Category]()
+            }
+        }
+        catch {
+            return [Category]()
+        }
     }
     
     private struct DataCommit {

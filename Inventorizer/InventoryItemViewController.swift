@@ -119,7 +119,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
         notesTextView.isSelectable = editMode
         accountedForSwitch.isEnabled = editMode
         
-        if editMode {            
+        if editMode {
             topNavBar.setLeftBarButton(cancelButton, animated: true)
             topNavBar.setRightBarButton(saveButton, animated: true)
         }

@@ -13,6 +13,7 @@ class InventoryTableViewController: UIViewController {
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
     @IBOutlet weak var topNavigation: UINavigationItem!
+    @IBOutlet weak var settingsButton: UIBarButtonItem!
     
     var buttonsNotEditing: [UIBarButtonItem]!
     var buttonsEditing: [UIBarButtonItem]!
@@ -27,7 +28,7 @@ class InventoryTableViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
         // initialize the data source and set the table's data source to it
-        dataSource = InventorizerTableViewDataSource()
+        dataSource = InventorizerTableViewDataSource(archiveName: "itemsByCategory")
         mainTable.dataSource = dataSource
         
         // make the button bar for when no editing is happening
@@ -36,7 +37,7 @@ class InventoryTableViewController: UIViewController {
         // make the button bar for when editing is happening
         // disable trash and mark buttons by defualt
         trashButton.isEnabled = false
-        markButton.isEnabled = false
+        trashButton.tintColor = UIColor.red
         
         buttonsEditing = [trashButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), markButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editToogleTapped(_:)))]
         
@@ -121,43 +122,70 @@ class InventoryTableViewController: UIViewController {
     }
     
     @objc func markTapped(_ sender: UIBarButtonItem) {
-        guard let numRowsSelected = mainTable.indexPathsForSelectedRows?.count else {
-            return
+        var numRowsSelected = 0
+        if sender.title != "Mark All", let unwrapNumRowsSelected = mainTable.indexPathsForSelectedRows?.count {
+            numRowsSelected = unwrapNumRowsSelected
         }
-        guard let indexPaths = mainTable.indexPathsForSelectedRows else {
+        else if sender.title != "Mark All" {
             return
         }
         
-        let markOptions = UIAlertController(title: "Mark \(numRowsSelected) row\((numRowsSelected == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
+
+        
+        let markOptions = UIAlertController(title: "Mark \((numRowsSelected == 0) ? "all" : "\(numRowsSelected)") row\((numRowsSelected == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
         
         // code for iPads
         markOptions.popoverPresentationController?.barButtonItem = sender
         
         markOptions.addAction(UIAlertAction(title: "Accounted For", style: .default, handler: {(_) in
-            // code to mark all
-            for indexPath in indexPaths {
-                self.dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = true
+            if numRowsSelected != 0 {
+                self.markSelected(as: true, for: sender)
             }
-            
-            // disable editing
-            // TODO: determine if I want this behavior, could make it a setting
-            self.editToogleTapped(sender)
+            else {
+                self.markAll(as: true, for: sender)
+            }
         }))
         
         markOptions.addAction(UIAlertAction(title: "Not Accounted For", style: .default, handler: {(_) in
-            // code to unmark all
-            for indexPath in indexPaths {
-                self.dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = false
+            if numRowsSelected != 0 {
+                self.markSelected(as: false, for: sender)
             }
-            
-            // disable editing
-            // TODO: determine if I want this behavior, could make it a setting
-            self.editToogleTapped(sender)
+            else {
+                self.markAll(as: false, for: sender)
+            }
         }))
         
         markOptions.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         present(markOptions, animated: true)
+    }
+    
+    func markSelected(as value: Bool, for sender: UIBarButtonItem) {
+        guard let indexPaths = mainTable.indexPathsForSelectedRows else {
+            return
+        }
+        
+        // code to mark all
+        for indexPath in indexPaths {
+            dataSource.itemsByCategory[indexPath.section].getItem(at: indexPath.row).accountedFor = value
+        }
+        dataSource.saveData()
+        
+        // disable editing
+        // TODO: determine if I want this behavior, could make it a setting
+        editToogleTapped(sender)
+    }
+    
+    func markAll(as value: Bool, for sender: UIBarButtonItem) {
+        for category in dataSource.itemsByCategory {
+            for item in category.getItems() {
+                item.accountedFor = value
+            }
+        }
+        
+        dataSource.saveData()
+        
+        editToogleTapped(sender)
     }
     
     @objc func editToogleTapped(_ sender: Any) {
@@ -166,6 +194,9 @@ class InventoryTableViewController: UIViewController {
             mainTable.setEditing(false, animated: true)
         }
         else {
+            trashButton.isEnabled = false
+//            markButton.isEnabled = false
+            markButton.title = "Mark All"
             bottomToolBar.setItems(buttonsEditing, animated: true)
             mainTable.setEditing(true, animated: true)
         }
@@ -210,7 +241,6 @@ class InventoryTableViewController: UIViewController {
         
         self.mainTable.reloadData()
     }
-    
     // MARK: End Unwind funcs    
 }
 
@@ -225,7 +255,8 @@ extension InventoryTableViewController: UITableViewDelegate {
             // sanity check
             if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
                 trashButton.isEnabled = true
-                markButton.isEnabled = true
+                markButton.title = "Mark"
+                //markButton.isEnabled = true
             }
         }
     }
@@ -234,7 +265,8 @@ extension InventoryTableViewController: UITableViewDelegate {
         if tableView.isEditing {
             if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
                 trashButton.isEnabled = false
-                markButton.isEnabled = false
+                markButton.title = "Mark All"
+                //markButton.isEnabled = false
             }
         }
     }
