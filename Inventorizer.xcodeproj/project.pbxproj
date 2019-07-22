@@ -11,7 +11,6 @@
 		0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931E722E4258F0001C767 /* CoreDataService.swift */; };
 		0A1931EF22E4289A0001C767 /* CDItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */; };
 		0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */; };
-		0A2F45EC22E525A800B388B8 /* CDItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F45EB22E525A800B388B8 /* CDItem+CoreDataProperties.swift */; };
 		0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */; };
 		0A8189F422CFBBD800168C02 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189F322CFBBD800168C02 /* Category.swift */; };
 		0A8189F622CFC2E200168C02 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A8189F522CFC2E200168C02 /* Utilities.swift */; };
@@ -41,7 +40,6 @@
 		0A1931E722E4258F0001C767 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		0A2F45EB22E525A800B388B8 /* CDItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CDItem+CoreDataProperties.swift"; path = "Inventorizer/Core Data/CDItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryItemViewController.swift; sourceTree = "<group>"; };
 		0A8189F322CFBBD800168C02 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		0A8189F522CFC2E200168C02 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
@@ -138,7 +136,6 @@
 		0AC30F4E22CD940C004A8525 = {
 			isa = PBXGroup;
 			children = (
-				0A2F45EB22E525A800B388B8 /* CDItem+CoreDataProperties.swift */,
 				0AC30F5922CD940C004A8525 /* Inventorizer */,
 				0A8189FE22CFC39C00168C02 /* InventorizerTests */,
 				0AC30F5822CD940C004A8525 /* Products */,
@@ -281,7 +278,6 @@
 			files = (
 				0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */,
 				0A8189F622CFC2E200168C02 /* Utilities.swift in Sources */,
-				0A2F45EC22E525A800B388B8 /* CDItem+CoreDataProperties.swift in Sources */,
 				0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */,
 				0A8189F422CFBBD800168C02 /* Category.swift in Sources */,
 				0AC30F6D22CDA1D2004A8525 /* Item.swift in Sources */,

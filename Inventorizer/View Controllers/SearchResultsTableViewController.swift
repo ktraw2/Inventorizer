@@ -9,14 +9,22 @@
 import UIKit
 
 class SearchResultsTableViewController: UITableViewController {
-    var dataSource: InventorizerTableViewDataSource!
-    var masterDataSource: InventorizerTableViewDataSource?
+    var dataSource: InventorizerTableViewDataSource
     var baseNavigationController: UINavigationController?
-    //var resultsToWholeCategoryMap = [CDCategory: CDIndexedCategory]()
+    
+    init(style: UITableView.Style, dataSource: InventorizerTableViewDataSource) {
+        self.dataSource = dataSource
+        super.init(style: style)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataSource = InventorizerTableViewDataSource(assignedTo: tableView)
+        tableView.dataSource = dataSource
         self.tableView.delegate = self
         
 
@@ -29,7 +37,7 @@ class SearchResultsTableViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt: IndexPath) {
-        let selectedItemCategoryIndex = didSelectRowAt.section
+//        let selectedItemCategoryIndex = didSelectRowAt.section
 //        let selectedItemCategory = dataSource.itemsByCategory[selectedItemCategoryIndex]
 //        guard let selectedItem = selectedItemCategory.items.object(at: didSelectRowAt.row) as? CDItem else {
 //            return
@@ -42,12 +50,14 @@ class SearchResultsTableViewController: UITableViewController {
 //            return
 //        }
         
-//        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(CDCategorizedItem(item: selectedItem, indexedCategory: actualCategory)) else {
-//            return
-//        }
-//        itemViewController.masterDataSource = masterDataSource
+        let item = dataSource.fetchedResultsController.object(at: didSelectRowAt)
+        
+        guard let itemViewController = InventoryItemViewController.buildItemControllerWith(item) else {
+            return
+        }
+        itemViewController.masterDataSource = dataSource
 //
-//        baseNavigationController?.pushViewController(itemViewController, animated: true)
+        baseNavigationController?.pushViewController(itemViewController, animated: true)
     }
     // MARK: - Table view data source
 

@@ -43,12 +43,12 @@ class InventoryTableViewController: UIViewController {
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
         
-        let resultsController = SearchResultsTableViewController(style: .grouped)
+        let resultsController = SearchResultsTableViewController(style: .grouped, dataSource: dataSource)
         resultsController.baseNavigationController = navigationController
-        resultsController.masterDataSource = dataSource
-        
-        searchController = UISearchController(searchResultsController: resultsController)
+
+        searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = false
         
         if #available(iOS 11.0, *) {
             topNavigation.searchController = searchController
@@ -76,7 +76,6 @@ class InventoryTableViewController: UIViewController {
         
         confirmDelete.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { (_) in
             // delete rows of table
-            var sectionsToUpdate = [Int]()
             indexPaths.sort()
             var currentSection = 0
             var shiftRow = 0
@@ -90,9 +89,6 @@ class InventoryTableViewController: UIViewController {
                         shiftSection += 1
                         self.dataSource.sectionWasRemoved = false
                     }
-                    else {
-                        sectionsToUpdate.append(currentSection - shiftSection)
-                    }
                     currentSection = indexPath.section
                 }
                 
@@ -100,18 +96,12 @@ class InventoryTableViewController: UIViewController {
                 shiftRow += 1
             }
             
-            print(self.dataSource.sectionWasRemoved)
-            if self.dataSource.sectionWasRemoved == false {
-                sectionsToUpdate.append(currentSection - shiftSection)
-            }
-            else {
+            if self.dataSource.sectionWasRemoved {
                 self.dataSource.sectionWasRemoved = false
             }
-            print(sectionsToUpdate)
-            if sectionsToUpdate.count > 0 {
-                self.mainTable.reloadSectionIndexTitles()
-                self.mainTable.reloadSections(IndexSet(sectionsToUpdate), with: .none)
-            }
+            
+            self.mainTable.reloadSectionIndexTitles()
+            
             self.editToogleTapped(sender)
         }))
         
@@ -130,8 +120,9 @@ class InventoryTableViewController: UIViewController {
         }
         
 
+        let rows = (numRowsSelected == 0) ? (dataSource.fetchedResultsController.fetchedObjects?.count ?? 0) : numRowsSelected
         
-        let markOptions = UIAlertController(title: "Mark \((numRowsSelected == 0) ? "all" : "\(numRowsSelected)") row\((numRowsSelected == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
+        let markOptions = UIAlertController(title: "Mark \((numRowsSelected == 0) ? "all \(rows)" : "\(rows)") row\((rows == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
         
         // code for iPads
         markOptions.popoverPresentationController?.barButtonItem = sender
@@ -199,13 +190,10 @@ class InventoryTableViewController: UIViewController {
         }
         else {
             trashButton.isEnabled = false
-//            markButton.isEnabled = false
             markButton.title = "Mark All"
             bottomToolBar.setItems(buttonsEditing, animated: true)
             mainTable.setEditing(true, animated: true)
         }
-
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -218,7 +206,6 @@ class InventoryTableViewController: UIViewController {
             
             searchController.isActive = false
             item.incomingItem = selectedItem
-//            item.incomingData = CDCategorizedItem(item: selectedItem, indexedCategory: CDIndexedCategory(category: dataSource.itemsByCategory[indexPath.section], index: indexPath.section))
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)
         }
@@ -237,12 +224,6 @@ class InventoryTableViewController: UIViewController {
     // MARK: Begin Unwind funcs
     
     @IBAction func didUnwindSaveFromItem (_ sender: UIStoryboardSegue) {
-        // only continue if we are unwinding from InventoryItemViewController
-        guard sender.source is InventoryItemViewController else {
-            return
-        }
-        
-//        self.mainTable.reloadData()
     }
     // MARK: End Unwind funcs    
 }
@@ -259,7 +240,6 @@ extension InventoryTableViewController: UITableViewDelegate {
             if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
                 trashButton.isEnabled = true
                 markButton.title = "Mark"
-                //markButton.isEnabled = true
             }
         }
     }
@@ -269,7 +249,6 @@ extension InventoryTableViewController: UITableViewDelegate {
             if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
                 trashButton.isEnabled = false
                 markButton.title = "Mark All"
-                //markButton.isEnabled = false
             }
         }
     }
@@ -288,15 +267,10 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         guard let searchQuery = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) else {
             return
         }
-        guard let resultsController = searchController.searchResultsController as? SearchResultsTableViewController else {
-            return
-        }
-        
-        //resultsController.dataSource.itemsByCategory = [CDCategory]()
         
         // display nothing if no query is entered
         if searchQuery == "" {
-            resultsController.tableView.reloadData()
+            dataSource.reloadData()
             return
         }
         
@@ -304,12 +278,13 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         var predicateArray = [NSPredicate]()
         
         for query in tokenizedQuery {
-            let subpredicate = NSPredicate(format: "(name CONTAINS[c] %@) OR (category CONTAINS[c] %@) OR (category == '' AND 'Uncategorized' CONTAINS[c] %@)", query, query, query)
+            let subpredicate = NSPredicate(format: "(name CONTAINS[c] %@) OR (categoryName CONTAINS[c] %@) OR (categoryName == '' AND 'No Category' CONTAINS[c] %@)", query, query, query)
             predicateArray.append(subpredicate)
         }
         
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
-        var i = 0
+        
+        dataSource.reloadData(using: compoundPredicate)
         
 //        for category in dataSource.itemsByCategory {
 //            let arrayToFilter = category.items.array as NSArray
@@ -328,7 +303,6 @@ extension InventoryTableViewController: UISearchResultsUpdating {
 //        }
         
         //resultsController.dataSource.itemsByCategory.sort()
-        resultsController.tableView.reloadData()
 //        let arrayToFiter = dataSource.itemsByCategory as NSArray
 //        resultsController.dataSource.itemsByCategory = arrayToFiter.filtered(using: categoryPredicate) as! [Category]
 //        resultsController.tableView.reloadData()

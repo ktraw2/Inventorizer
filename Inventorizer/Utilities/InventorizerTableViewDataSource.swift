@@ -12,7 +12,6 @@ import CoreData
 
 class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
 
-    //var itemsByCategory: [CDCategory]
     var tableView: UITableView
     var fetchedResultsController: NSFetchedResultsController<CDItem>
     var sectionWasRemoved = false
@@ -30,19 +29,31 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             fatalError("Error!")
         }
         
-//        do {
-//            let itemsByCategory = try CoreDataService.context.fetch(fetchRequest)
-//            self.itemsByCategory = itemsByCategory
-//        }
-//        catch {
-//            fatalError("Error!")
-//        }
-        
         self.tableView = tableView
         
         super.init()
         fetchedResultsController.delegate = self
         tableView.dataSource = self
+    }
+    
+    func reloadData(using predicate: NSPredicate? = nil) {
+        fetchedResultsController.fetchRequest.predicate = predicate
+        
+        do {
+            try fetchedResultsController.performFetch()
+        }
+        catch {
+            fatalError("Error!")
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func reloadSectionFooter(at sectionIndex: Int) {
+        if let footerView = tableView.footerView(forSection: sectionIndex), let textLabel = footerView.textLabel {
+            textLabel.text = tableView(tableView, titleForFooterInSection: sectionIndex)
+            footerView.sizeToFit()
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -69,7 +80,7 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         
         for category in sections {
             let name = category.name
-            result.append("\((name == "") ? "Uncategorized" : name) (\(category.numberOfObjects))")
+            result.append("\((name == "") ? "No Category" : name) (\(category.numberOfObjects))")
         }
         
         return result
@@ -81,34 +92,18 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         }
         
         let name = sections[section].name
-        return "\((name == "") ? "Uncategorized" : name)"
+        return "\((name == "") ? "No Category" : name)"
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let num = fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        let num = numObjectsIn(section: section)
         return "\(num) item\((num == 1) ? "" : "s")"
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        // in this func we actually want to affect itemsByCategory because this is the actual data
         if editingStyle == .delete {
             // remove the item
             CoreDataService.context.delete(fetchedResultsController.object(at: indexPath))
-            
-//            tableView.beginUpdates()
-//            let category = itemsByCategory[indexPath.section]
-//            category.removeFromItems(at: indexPath.row)
-//            CoreDataService.context.delete(category)
-//            tableView.deleteRows(at: [indexPath], with: .automatic)
-//
-//            // remove the category if it's empty
-//            if category.items.count == 0 {
-//                itemsByCategory.remove(at: indexPath.section)
-//                CoreDataService.context.delete(category)
-//                sectionWasRemoved = true
-//                tableView.deleteSections(IndexSet(integer: indexPath.section), with: .automatic)
-            //}
-//            tableView.endUpdates()
             saveData()
         }
     }
@@ -164,98 +159,6 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         
         saveData()
         function?()
-        
-        // handle case where an item changes categories or name
-        // if we are changing categories or names we risk colliding with an already existing object, so this variable keeps track of the risk
-//        var itemIsChangingKeyData = false
-//        var dataCommit = DataCommit()
-//
-//        if let incomingData = item.incomingData {
-//            if newItem.category != incomingData.item.category || newItem.name != incomingData.item.name {
-//                itemIsChangingKeyData = true
-//                dataCommit.stagedCategory = incomingData.indexedCategory
-//                dataCommit.stagedItem = incomingData.item
-//            }
-//
-//        }
-//        else {
-//            itemIsChangingKeyData = true
-//        }
-        
-        // bsearch for category
-//        let dummyCategory = CDCategory(context: CoreDataService.context)
-//        dummyCategory.name = category
-//
-//        let categoryIndex = Utilities.binarySearch(array: itemsByCategory, item: dummyCategory)
-//        print(categoryIndex)
-//
-//        CoreDataService.context.delete(dummyCategory)
-//
-//        if let existingCategoryIndex = categoryIndex {
-//            // bsearch for item
-//            let itemIndex = Utilities.binarySearch(array: itemsByCategory[existingCategoryIndex].items.array as! [CDItem], item: newItem)
-//            if let existingItemIndex = itemIndex {
-//                // determine if we are about to collide with an object that isn't the one we edited
-//                if itemIsChangingKeyData {
-//                    // we are, because the original object is gone based on code above, so give a warning
-//                    let aboutToOverwriteWarning = UIAlertController(title: "Overwrite data?", message: "The name or category you have given corresponds to an already existing item in the table. Do you want to overwrite this item? This action cannot be undone.", preferredStyle: .alert)
-//
-//                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
-//                        dataCommit.shiftedCategoryIndex = existingCategoryIndex
-//                        dataCommit.shiftedItemIndex = existingItemIndex
-//                        dataCommit = self.commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
-//
-//                        let category = self.itemsByCategory[dataCommit.shiftedCategoryIndex]
-//                        newItem.category = category
-//
-//                        category.replaceItems(at: dataCommit.shiftedItemIndex, with: newItem)
-//                        self.saveData()
-//                        function?()
-//                    }))
-//
-//                    aboutToOverwriteWarning.addAction(UIAlertAction(title: "No", style: .cancel, handler: {(_) in
-//                        CoreDataService.context.delete(newItem)
-//                    }))
-//
-//                    item.present(aboutToOverwriteWarning, animated: true)
-//                }
-//                else {
-//                    let category = itemsByCategory[existingCategoryIndex]
-//                    newItem.category = category
-//
-//                    category.replaceItems(at: existingItemIndex, with: newItem)
-//                    saveData()
-//                    function?()
-//                }
-//            }
-//            else {
-//                // we are working within the same category
-//                dataCommit.shiftedCategoryIndex = existingCategoryIndex
-//                dataCommit.mustKeepCategory = true
-//                dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
-//
-//                let category = itemsByCategory[dataCommit.shiftedCategoryIndex]
-//                newItem.category = category
-//
-//                category.addToItems(newItem)
-//                saveData()
-//                function?()
-//            }
-//        }
-//        else {
-//            // category is not there, append a new category and sort
-//            dataCommit = commitStaged(referencing: item, using: dataCommit, sortingAgainst: newItem)
-//
-//            let newCategory = CDCategory(context: CoreDataService.context)
-//            newCategory.name = category
-//            newCategory.addToItems(newItem)
-//            newItem.category = newCategory
-//
-//            itemsByCategory.append(newCategory)
-//            itemsByCategory.sort()
-//            saveData()
-//            function?()
-//        }
     }
     
     private func errorEmptyName(for sender: InventoryItemViewController) {
@@ -266,54 +169,21 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
         sender.present(emptyNameError, animated: true)
     }
     
-    private func commitStaged(referencing item: InventoryItemViewController, using commit: DataCommit, sortingAgainst newItem: CDItem) -> DataCommit {
-        
-//        guard let editedItem = commit.stagedItem, let editedCategory = commit.stagedCategory else {
-//            return commit
-//        }
-//
-//        var result = commit
-//
-//        if editedCategory.category == newItem.category && editedItem < newItem {
-//            result.shiftedItemIndex -= 1
-//        }
-//
-//        editedCategory.category.removeFromItems(editedItem)
-//
-//        if editedCategory.category.items.count == 0 && commit.mustKeepCategory == false {
-//            if editedCategory.category < newItem.category {
-//                result.shiftedCategoryIndex -= 1
-//            }
-//
-////            itemsByCategory.remove(at: editedCategory.index)
-//        }
-//
-//        return result
-        return commit
-    }
-    
     func saveData() {
         CoreDataService.saveContext()
-    }
-    
-    private struct DataCommit {
-        //var stagedCategory: CDIndexedCategory?
-        var stagedItem: CDItem?
-        
-        var mustKeepCategory: Bool
-        
-        var shiftedItemIndex: Int
-        var shiftedCategoryIndex: Int
-        
-        init() {
-            mustKeepCategory = false
-            shiftedItemIndex = 0
-            shiftedCategoryIndex = 0
-        }
     }
 }
 
 extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
+    func numObjectsIn(section: Int) -> Int {
+        if section < fetchedResultsController.sections?.count ?? 0 {
+            return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        }
+        else {
+            return 0
+        }
+    }
+    
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
@@ -331,10 +201,7 @@ extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
             
             case .delete:
                 tableView.deleteSections(IndexSet(integer: sectionIndex), with: .automatic)
-                break
-            
-            case .update:
-                print("update section")
+                sectionWasRemoved = true
                 break
             
             default:
@@ -349,6 +216,7 @@ extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
                     break
                 }
                 tableView.insertRows(at: [insertIndexPath], with: .automatic)
+                reloadSectionFooter(at: insertIndexPath.section)
                 break
             
             case .delete:
@@ -356,6 +224,9 @@ extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
                     break
                 }
                 tableView.deleteRows(at: [deleteIndexPath], with: .right)
+                if (numObjectsIn(section: deleteIndexPath.section) != 0) {
+                    reloadSectionFooter(at: deleteIndexPath.section)
+                }
                 break
             
             case .move:
@@ -366,6 +237,12 @@ extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
                     break
                 }
                 tableView.moveRow(at: beforeIndexPath, to: afterIndexPath)
+                if (beforeIndexPath.section != afterIndexPath.section) {
+                    if (numObjectsIn(section: beforeIndexPath.section) != 0) {
+                        reloadSectionFooter(at: beforeIndexPath.section)
+                    }
+                    reloadSectionFooter(at: afterIndexPath.section)
+                }
                 tableView.endUpdates()
                 tableView.beginUpdates()
                 fallthrough
