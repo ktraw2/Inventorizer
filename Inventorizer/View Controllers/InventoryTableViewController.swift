@@ -44,9 +44,6 @@ class InventoryTableViewController: UIViewController {
         
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
-        
-        let resultsController = SearchResultsTableViewController(style: .grouped, dataSource: dataSource)
-        resultsController.baseNavigationController = navigationController
 
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
