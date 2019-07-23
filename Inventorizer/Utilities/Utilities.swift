@@ -61,3 +61,12 @@ class Utilities {
         }
     }
 }
+
+extension Array {
+    mutating func appendOptional(_ newElement: Element?) {
+        guard let unwrapNewElement = newElement else {
+            return
+        }
+        append(unwrapNewElement)
+    }
+}

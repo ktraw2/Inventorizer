@@ -22,6 +22,8 @@ class InventoryTableViewController: UIViewController {
     
     let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
+    
+    var searchScope = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +51,8 @@ class InventoryTableViewController: UIViewController {
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.scopeButtonTitles = ["All", "Accounted For", "Not Accounted For"]
+        searchController.searchBar.delegate = self
         
         if #available(iOS 11.0, *) {
             topNavigation.searchController = searchController
@@ -204,7 +208,7 @@ class InventoryTableViewController: UIViewController {
             }
             let selectedItem = dataSource.fetchedResultsController.object(at: indexPath)
             
-            searchController.isActive = false
+//            searchController.isActive = false
             item.incomingItem = selectedItem
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)
@@ -268,9 +272,17 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             return
         }
         
+        var optionalScopeModifier: NSPredicate?
+        if searchScope == 1 {
+            optionalScopeModifier = NSPredicate(format: "accountedFor == true")
+        }
+        else if searchScope == 2 {
+            optionalScopeModifier = NSPredicate(format: "accountedFor == false")
+        }
+        
         // display nothing if no query is entered
         if searchQuery == "" {
-            dataSource.reloadData()
+            dataSource.reloadData(using: optionalScopeModifier)
             return
         }
         
@@ -282,29 +294,22 @@ extension InventoryTableViewController: UISearchResultsUpdating {
             predicateArray.append(subpredicate)
         }
         
+        predicateArray.appendOptional(optionalScopeModifier)
+
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
         
         dataSource.reloadData(using: compoundPredicate)
-        
-//        for category in dataSource.itemsByCategory {
-//            let arrayToFilter = category.items.array as NSArray
-//            let results = arrayToFilter.filtered(using: compoundPredicate) as! [CDItem]
-//
-//            if results.count > 0 {
-//                let resultsCategory = CDCategory()
-//                resultsCategory.name = category.name
-//                resultsCategory.items = NSOrderedSet(array: results)
-//
-//                resultsController.dataSource.itemsByCategory.append(resultsCategory)
-//                resultsController.resultsToWholeCategoryMap[resultsCategory] = CDIndexedCategory(category: category, index: i)
-//            }
-//
-//            i += 1
-//        }
-        
-        //resultsController.dataSource.itemsByCategory.sort()
-//        let arrayToFiter = dataSource.itemsByCategory as NSArray
-//        resultsController.dataSource.itemsByCategory = arrayToFiter.filtered(using: categoryPredicate) as! [Category]
-//        resultsController.tableView.reloadData()
+    }
+}
+
+extension InventoryTableViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        searchScope = selectedScope
+        updateSearchResults(for: searchController)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.selectedScopeButtonIndex = 0
+        searchScope = 0
     }
 }
