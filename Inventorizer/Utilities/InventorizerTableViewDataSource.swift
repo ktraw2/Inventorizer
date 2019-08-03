@@ -14,30 +14,32 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
 
     var tableView: UITableView
     var fetchedResultsController: NSFetchedResultsController<CDItem>
+    var table: Table
     var sectionWasRemoved = false
     
-    init(assignedTo tableView: UITableView) {
+    init(assignedTo tableView: UITableView, for table: Table) {
         let fetchRequest: NSFetchRequest<CDItem> = CDItem.fetchRequest()
         let categorySorting = NSSortDescriptor(key: "categoryName", ascending: true)
         let nameSorting = NSSortDescriptor(key: "name", ascending: true)
         fetchRequest.sortDescriptors = [categorySorting, nameSorting]
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataService.context, sectionNameKeyPath: "categoryName", cacheName: nil)
-        do {
-            try fetchedResultsController.performFetch()
-        }
-        catch {
-            fatalError("Error!")
-        }
-        
+     
         self.tableView = tableView
-        
+        self.table = table
         super.init()
+        reloadData()
         fetchedResultsController.delegate = self
         tableView.dataSource = self
     }
     
     func reloadData(using predicate: NSPredicate? = nil) {
-        fetchedResultsController.fetchRequest.predicate = predicate
+        let idPredicate = NSPredicate(format: "%K == %@", "tableID", table.id as CVarArg)
+        var fetchPredicate = idPredicate
+        if let additionalPredicate = predicate {
+            fetchPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [idPredicate, additionalPredicate])
+        }
+        
+        fetchedResultsController.fetchRequest.predicate = fetchPredicate
         
         do {
             try fetchedResultsController.performFetch()
@@ -144,8 +146,9 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             incomingItem.name = name
             incomingItem.notes = notes
             incomingItem.categoryName = category
+            incomingItem.image = image
             incomingItem.accountedFor = item.accountedForSwitch.isOn
-            
+            incomingItem.tableID = table.id
         }
         else {
             let newItem = CDItem(context: CoreDataService.context)
@@ -153,8 +156,8 @@ class InventorizerTableViewDataSource: NSObject, UITableViewDataSource {
             newItem.notes = notes
             newItem.categoryName = category
             newItem.image = image
-            // TODO: Add image here
             newItem.accountedFor = item.accountedForSwitch.isOn
+            newItem.tableID = table.id
         }
         
         saveData()
@@ -225,7 +228,7 @@ extension InventorizerTableViewDataSource: NSFetchedResultsControllerDelegate {
                 }
                 tableView.deleteRows(at: [deleteIndexPath], with: .right)
                 if (numObjectsIn(section: deleteIndexPath.section) != 0) {
-                    reloadSectionFooter(at: deleteIndexPath.section)
+                     reloadSectionFooter(at: deleteIndexPath.section)
                 }
                 break
             

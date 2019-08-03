@@ -20,7 +20,17 @@ class InventoryTableViewController: UIViewController {
     var searchController: UISearchController!
     var dataSource: InventorizerTableViewDataSource!
     
-    let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
+    var table: Table!
+    
+    let trashButton: UIBarButtonItem = { () -> UIBarButtonItem in
+        let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
+        
+        // disable trash and mark buttons by defualt
+        trashButton.isEnabled = false
+        trashButton.tintColor = UIColor.red
+        return trashButton
+    }()
+    
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
     
     var searchScope = 0
@@ -30,16 +40,12 @@ class InventoryTableViewController: UIViewController {
         
         // Do any additional setup after loading the view, typically from a nib.
         // initialize the data source and set the table's data source to it
-        dataSource = InventorizerTableViewDataSource(assignedTo: mainTable)
+        dataSource = InventorizerTableViewDataSource(assignedTo: mainTable, for: table)
         
         // make the button bar for when no editing is happening
         buttonsNotEditing = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editToogleTapped(_:)))]
         
         // make the button bar for when editing is happening
-        // disable trash and mark buttons by defualt
-        trashButton.isEnabled = false
-        trashButton.tintColor = UIColor.red
-        
         buttonsEditing = [trashButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), markButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editToogleTapped(_:)))]
         
         // set the toolbar to have the not editing bar
@@ -60,6 +66,8 @@ class InventoryTableViewController: UIViewController {
         }
         
         definesPresentationContext = true
+        
+        topNavigation.title = table.name
     }
     
     @objc func trashTapped(_ sender: UIBarButtonItem) {
@@ -123,7 +131,7 @@ class InventoryTableViewController: UIViewController {
 
         let rows = (numRowsSelected == 0) ? (dataSource.fetchedResultsController.fetchedObjects?.count ?? 0) : numRowsSelected
         
-        let markOptions = UIAlertController(title: "Mark \((numRowsSelected == 0) ? "all \(rows)" : "\(rows)") row\((rows == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
+        let markOptions = UIAlertController(title: "Mark \((numRowsSelected == 0 && rows != 1) ? "all \(rows)" : "\(rows)") row\((rows == 1) ? "" : "s")", message: nil, preferredStyle: .actionSheet)
         
         // code for iPads
         markOptions.popoverPresentationController?.barButtonItem = sender
@@ -205,7 +213,6 @@ class InventoryTableViewController: UIViewController {
             }
             let selectedItem = dataSource.fetchedResultsController.object(at: indexPath)
             
-//            searchController.isActive = false
             item.incomingItem = selectedItem
             item.masterDataSource = dataSource
             mainTable.deselectRow(at: indexPath, animated: false)

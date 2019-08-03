@@ -190,11 +190,6 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     }
     
     @IBAction func photoLongPressed(_ sender: UITapGestureRecognizer) {
-        // only allow editing of photo if we are in edit mode
-        if editMode == false {
-            return
-        }
-        
         guard let image = itemImageView.image else {
             return
         }
@@ -212,18 +207,21 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
         }))
         
-        extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
-            let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "You can undo this action later by selecting \"Cancel\"", preferredStyle: .alert)
-            
-            confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
-                Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)
+        // only allow deletion if we are in edit mode
+        if editMode {
+            extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
+                let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "You can undo this action later by selecting \"Cancel\"", preferredStyle: .alert)
                 
+                confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
+                    Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)
+                    
+                }))
+                
+                confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+                
+                self.present(confirmDeleteAlert, animated: true)
             }))
-            
-            confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-            
-            self.present(confirmDeleteAlert, animated: true)
-        }))
+        }
         
         extraOptionsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         

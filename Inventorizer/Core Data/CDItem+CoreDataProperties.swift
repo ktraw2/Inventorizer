@@ -23,5 +23,6 @@ extension CDItem {
     @NSManaged public var name: String
     @NSManaged public var notes: String?
     @NSManaged public var categoryName: String
+    @NSManaged public var tableID: UUID
 
 }
