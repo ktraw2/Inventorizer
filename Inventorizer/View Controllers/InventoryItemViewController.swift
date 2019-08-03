@@ -21,7 +21,7 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     @IBOutlet var cancelButton: UIBarButtonItem!
     @IBOutlet var saveButton: UIBarButtonItem!
     
-    var incomingData: CategorizedItem?
+    var incomingItem: CDItem?
     var masterDataSource: InventorizerTableViewDataSource?
     
     var editMode = true
@@ -29,13 +29,13 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     private static let storyboardIdentifier = "Main"
     private static let selfIdentifier = "InventoryItemViewController"
     
-    class func buildItemControllerWith(_ incomingData: CategorizedItem?) -> InventoryItemViewController? {
+    class func buildItemControllerWith(_ incomingItem: CDItem?) -> InventoryItemViewController? {
         let storyboard = UIStoryboard(name: storyboardIdentifier, bundle: nil)
         guard let itemViewController = storyboard.instantiateViewController(withIdentifier: selfIdentifier) as? InventoryItemViewController else {
             return nil
         }
         
-        itemViewController.incomingData = incomingData
+        itemViewController.incomingItem = incomingItem
         
         return itemViewController
     }
@@ -45,21 +45,20 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
 
         // Do any additional setup after loading the view.
         // load item information
-        if let unpackIncomingData = incomingData {
-            nameTextField.text = unpackIncomingData.item.name
-            categoryTextField.text = unpackIncomingData.item.category
-            notesTextView.text = unpackIncomingData.item.notes
-            accountedForSwitch.setOn(unpackIncomingData.item.accountedFor, animated: false)
+        if let unpackIncomingItem = incomingItem {
+            nameTextField.text = unpackIncomingItem.name
+            categoryTextField.text = unpackIncomingItem.categoryName
+            notesTextView.text = unpackIncomingItem.notes
+            accountedForSwitch.setOn(unpackIncomingItem.accountedFor, animated: false)
             
-            if let unpackImage = unpackIncomingData.item.image {
+            if let unpackImage = unpackIncomingItem.image {
                 Utilities.updateImage(for: itemImageView, with: unpackImage)
             }
             else {
                 Utilities.updateImage(for: itemImageView, with: Utilities.defaultPlaceholderImage)
             }
             
-            // modify the top bar, change title and buttons
-            topNavBar.title = unpackIncomingData.item.name
+            topNavBar.title = unpackIncomingItem.name
             setEditMode(false)
         }
         else {
@@ -191,11 +190,6 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
     }
     
     @IBAction func photoLongPressed(_ sender: UITapGestureRecognizer) {
-        // only allow editing of photo if we are in edit mode
-        if editMode == false {
-            return
-        }
-        
         guard let image = itemImageView.image else {
             return
         }
@@ -213,18 +207,21 @@ class InventoryItemViewController: UIViewController, UITextFieldDelegate, UIImag
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
         }))
         
-        extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
-            let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "You can undo this action later by selecting \"Cancel\"", preferredStyle: .alert)
-            
-            confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
-                Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)
+        // only allow deletion if we are in edit mode
+        if editMode {
+            extraOptionsAlert.addAction(UIAlertAction(title: "Delete Photo", style: .destructive, handler: {(_) in
+                let confirmDeleteAlert = UIAlertController(title: "Are you sure you want to delete the photo?", message: "You can undo this action later by selecting \"Cancel\"", preferredStyle: .alert)
                 
+                confirmDeleteAlert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: {(_) in
+                    Utilities.updateImage(for: self.itemImageView, with: Utilities.defaultPlaceholderImage)
+                    
+                }))
+                
+                confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
+                
+                self.present(confirmDeleteAlert, animated: true)
             }))
-            
-            confirmDeleteAlert.addAction(UIAlertAction(title: "No", style: .cancel, handler: nil))
-            
-            self.present(confirmDeleteAlert, animated: true)
-        }))
+        }
         
         extraOptionsAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
