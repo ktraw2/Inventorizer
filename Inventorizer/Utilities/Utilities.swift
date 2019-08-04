@@ -70,3 +70,17 @@ extension Array {
         append(unwrapNewElement)
     }
 }
+
+extension Date {
+    func dayMonthYear() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "ddMMyyyy"
+        return formatter.string(from: self)
+    }
+    
+    func year() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
+        return formatter.string(from: self)
+    }
+}

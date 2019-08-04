@@ -20,7 +20,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="VTC-3D-tc3">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="Q6M-fG-RPe">
@@ -40,7 +40,7 @@
                                 </connections>
                             </tableView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nnz-60-2XT">
-                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                                <rect key="frame" x="0.0" y="818" width="414" height="44"/>
                                 <items/>
                             </toolbar>
                         </subviews>
@@ -65,7 +65,7 @@
                             </barButtonItem>
                             <barButtonItem title="Options" id="huO-L6-G3K">
                                 <connections>
-                                    <segue destination="x93-Sn-MHR" kind="show" id="hkY-5J-goz"/>
+                                    <segue destination="x93-Sn-MHR" kind="show" identifier="ViewOptionsSegue" id="hkY-5J-goz"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -83,7 +83,7 @@
         <!--Options-->
         <scene sceneID="3t7-jJ-1gF">
             <objects>
-                <viewController id="x93-Sn-MHR" customClass="SettingsViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="x93-Sn-MHR" customClass="OptionsViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="TRx-Cj-a9S">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -92,7 +92,7 @@
                                 <rect key="frame" x="0.0" y="140" width="414" height="722"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="e5c-zN-YX8">
-                                        <rect key="frame" x="10" y="10" width="394" height="568.5"/>
+                                        <rect key="frame" x="10" y="10" width="394" height="386"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="35" translatesAutoresizingMaskIntoConstraints="NO" id="KmU-mb-lUD">
                                                 <rect key="frame" x="0.0" y="0.0" width="224.5" height="30"/>
@@ -108,6 +108,10 @@
                                                         <nil key="textColor"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                        <connections>
+                                                            <action selector="textEdited:" destination="x93-Sn-MHR" eventType="editingDidEnd" id="SOe-ME-tpr"/>
+                                                            <outlet property="delegate" destination="x93-Sn-MHR" id="hOz-Gb-kGy"/>
+                                                        </connections>
                                                     </textField>
                                                 </subviews>
                                             </stackView>
@@ -135,20 +139,23 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="sz7-9F-snf">
-                                                <rect key="frame" x="0.0" y="126.5" width="394" height="442"/>
+                                                <rect key="frame" x="0.0" y="126.5" width="394" height="259.5"/>
                                                 <subviews>
-                                                    <datePicker contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="J36-70-Gi2">
+                                                    <datePicker contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="J36-70-Gi2">
                                                         <rect key="frame" x="0.0" y="0.0" width="394" height="216"/>
                                                         <date key="date" timeIntervalSinceReferenceDate="585598183.38579297">
                                                             <!--2019-07-23 18:09:43 +0000-->
                                                         </date>
+                                                        <connections>
+                                                            <action selector="datePickerChanged:" destination="x93-Sn-MHR" eventType="valueChanged" id="xzk-AC-XnE"/>
+                                                        </connections>
                                                     </datePicker>
-                                                    <datePicker contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="0vU-Jx-6XN">
-                                                        <rect key="frame" x="0.0" y="226" width="394" height="216"/>
-                                                        <date key="date" timeIntervalSinceReferenceDate="585598183.38579297">
-                                                            <!--2019-07-23 18:09:43 +0000-->
-                                                        </date>
-                                                    </datePicker>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Year: 0000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GMG-0N-SAR">
+                                                        <rect key="frame" x="0.0" y="226" width="394" height="33.5"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                 </subviews>
                                             </stackView>
                                         </subviews>
@@ -182,7 +189,8 @@
                         <outlet property="notificationSlider" destination="Fdb-W7-uhc" id="1eC-0q-wYb"/>
                         <outlet property="pickerStack" destination="sz7-9F-snf" id="iup-lF-P6K"/>
                         <outlet property="sendLabel" destination="YNW-x3-LaU" id="wbI-1E-rKv"/>
-                        <outlet property="timePicker" destination="0vU-Jx-6XN" id="VC8-mQ-ImP"/>
+                        <outlet property="tableNameTextField" destination="P1K-OV-ddX" id="DqB-jy-dHE"/>
+                        <outlet property="yearLabel" destination="GMG-0N-SAR" id="HWJ-mo-Esa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="U2d-fG-TeO" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -359,7 +367,7 @@
         <!--All Tables-->
         <scene sceneID="CMm-Sg-Ty9">
             <objects>
-                <tableViewController id="86c-Rq-1Vj" customClass="ListTablesTableViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController modalPresentationStyle="formSheet" id="86c-Rq-1Vj" customClass="ListTablesTableViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="dBx-hV-Khu">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -383,11 +391,6 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="All Tables" id="4lG-d5-GT8">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="uIg-b9-648">
-                            <connections>
-                                <action selector="editTapped:" destination="86c-Rq-1Vj" id="pI9-at-G57"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="a8A-yh-fYK">
                             <connections>
                                 <action selector="addTapped:" destination="86c-Rq-1Vj" id="3FQ-RP-zh3"/>

@@ -11,7 +11,7 @@
 		0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931E722E4258F0001C767 /* CoreDataService.swift */; };
 		0A1931EF22E4289A0001C767 /* CDItem+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */; };
 		0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */; };
-		0A2F461322E7909300B388B8 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F461222E7909300B388B8 /* SettingsViewController.swift */; };
+		0A2F461322E7909300B388B8 /* OptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F461222E7909300B388B8 /* OptionsViewController.swift */; };
 		0A2F461622E7DBE600B388B8 /* Table+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F461422E7DBE600B388B8 /* Table+CoreDataClass.swift */; };
 		0A2F461722E7DBE600B388B8 /* Table+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F461522E7DBE600B388B8 /* Table+CoreDataProperties.swift */; };
 		0A2F461922E7DC8900B388B8 /* ListTablesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2F461822E7DC8900B388B8 /* ListTablesTableViewController.swift */; };
@@ -41,7 +41,7 @@
 		0A1931E722E4258F0001C767 /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		0A1931EB22E4289A0001C767 /* CDItem+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0A1931EC22E4289A0001C767 /* CDItem+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDItem+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		0A2F461222E7909300B388B8 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		0A2F461222E7909300B388B8 /* OptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsViewController.swift; sourceTree = "<group>"; };
 		0A2F461422E7DBE600B388B8 /* Table+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Table+CoreDataClass.swift"; sourceTree = "<group>"; };
 		0A2F461522E7DBE600B388B8 /* Table+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Table+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0A2F461822E7DC8900B388B8 /* ListTablesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTablesTableViewController.swift; sourceTree = "<group>"; };
@@ -83,7 +83,7 @@
 			children = (
 				0AC30F5C22CD940C004A8525 /* InventoryTableViewController.swift */,
 				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
-				0A2F461222E7909300B388B8 /* SettingsViewController.swift */,
+				0A2F461222E7909300B388B8 /* OptionsViewController.swift */,
 				0A2F461822E7DC8900B388B8 /* ListTablesTableViewController.swift */,
 			);
 			path = "View Controllers";
@@ -276,7 +276,7 @@
 				0A1931E822E4258F0001C767 /* CoreDataService.swift in Sources */,
 				0A8189F622CFC2E200168C02 /* Utilities.swift in Sources */,
 				0A8189D422CDC26A00168C02 /* InventoryItemViewController.swift in Sources */,
-				0A2F461322E7909300B388B8 /* SettingsViewController.swift in Sources */,
+				0A2F461322E7909300B388B8 /* OptionsViewController.swift in Sources */,
 				0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */,
 				0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */,
 				0A1931BD22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld in Sources */,

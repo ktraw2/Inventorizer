@@ -227,11 +227,20 @@ class InventoryTableViewController: UIViewController {
             
             item.masterDataSource = dataSource
         }
+        else if segue.identifier == "ViewOptionsSegue" {
+            guard let destination = segue.destination as? OptionsViewController else {
+                return
+            }
+            
+            destination.table = table
+            destination.parentTableVC = self
+        }
     }
     
     // MARK: Begin Unwind funcs
     
-    @IBAction func didUnwindSaveFromItem (_ sender: UIStoryboardSegue) {
+    @IBAction func didUnwindFromOptions (_ sender: UIStoryboardSegue) {
+        topNavigation.title = table.name
     }
     // MARK: End Unwind funcs    
 }

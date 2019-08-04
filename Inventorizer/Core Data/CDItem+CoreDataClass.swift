@@ -12,9 +12,7 @@ import CoreData
 
 @objc(CDItem)
 public class CDItem: NSManagedObject {
-//    override public var hash: Int {
-//        return name.hashValue
-//    }
+    
 }
 
 extension CDItem: Comparable {

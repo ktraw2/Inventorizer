@@ -13,14 +13,14 @@ class ListTablesTableViewController: UITableViewController {
 
     var fetchedResultsController: NSFetchedResultsController<Table>!
     
-    override func loadView() {
-        
-        
-        super.loadView()
-        tableView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100).isActive = true
-        print(tableView.constraints)
-        print(self.view.constraints)
-    }
+//    override func loadView() {
+//        
+//        
+//        super.loadView()
+//        tableView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100).isActive = true
+//        print(tableView.constraints)
+//        print(self.view.constraints)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class ListTablesTableViewController: UITableViewController {
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
         let fetchRequest: NSFetchRequest<Table> = Table.fetchRequest()
         let sortDescriptor: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
@@ -93,7 +93,6 @@ class ListTablesTableViewController: UITableViewController {
         
         // Configure the cell...
         cell.textLabel?.text = fetchedResultsController.object(at: indexPath).name
-        print(fetchedResultsController.object(at: indexPath).id)
         return cell
     }
     
