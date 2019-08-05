@@ -33,6 +33,8 @@ class InventoryTableViewController: UIViewController {
     
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
     
+    let moveButton = UIBarButtonItem(title: "Move", style: .plain, target: nil, action: #selector(moveTapped(_:)))
+    
     var searchScope = 0
 
     override func viewDidLoad() {
@@ -192,6 +194,10 @@ class InventoryTableViewController: UIViewController {
         editToogleTapped(sender)
     }
     
+    @objc func moveTapped(_ sender: Any) {
+        
+    }
+    
     @objc func editToogleTapped(_ sender: Any) {
         if mainTable.isEditing {
             bottomToolBar.setItems(buttonsNotEditing, animated: true)
@@ -199,6 +205,7 @@ class InventoryTableViewController: UIViewController {
         }
         else {
             trashButton.isEnabled = false
+            enableDisableMarkButton()
             markButton.title = "Mark All"
             bottomToolBar.setItems(buttonsEditing, animated: true)
             mainTable.setEditing(true, animated: true)
@@ -237,10 +244,23 @@ class InventoryTableViewController: UIViewController {
         }
     }
     
+    func enableDisableMarkButton() {
+        if dataSource.fetchedResultsController.fetchedObjects?.count ?? 0 == 0 {
+            markButton.isEnabled = false
+        }
+        else {
+            markButton.isEnabled = true
+        }
+    }
+    
     // MARK: Begin Unwind funcs
     
     @IBAction func didUnwindFromOptions (_ sender: UIStoryboardSegue) {
         topNavigation.title = table.name
+    }
+    
+    @IBAction func didUnwindSaveFromItem (_ sender: UIStoryboardSegue) {
+        enableDisableMarkButton()
     }
     // MARK: End Unwind funcs    
 }
@@ -296,6 +316,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         // display nothing if no query is entered
         if searchQuery == "" {
             dataSource.reloadData(using: optionalScopeModifier)
+            enableDisableMarkButton()
             return
         }
         
@@ -312,6 +333,7 @@ extension InventoryTableViewController: UISearchResultsUpdating {
         let compoundPredicate = NSCompoundPredicate(type: .and, subpredicates: predicateArray)
         
         dataSource.reloadData(using: compoundPredicate)
+        enableDisableMarkButton()
     }
 }
 
@@ -324,5 +346,6 @@ extension InventoryTableViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.selectedScopeButtonIndex = 0
         searchScope = 0
+        markButton.isEnabled = true
     }
 }
