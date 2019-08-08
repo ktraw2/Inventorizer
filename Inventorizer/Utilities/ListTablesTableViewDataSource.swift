@@ -20,6 +20,7 @@ class ListTablesTableViewDataSource: NSObject, UITableViewDataSource {
         self.parentViewController = parentViewController
         
         let fetchRequest: NSFetchRequest<Table> = Table.fetchRequest()
+        fetchRequest.predicate = predicate
         let sortDescriptor: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: CoreDataService.context, sectionNameKeyPath: nil, cacheName: nil)
@@ -35,17 +36,16 @@ class ListTablesTableViewDataSource: NSObject, UITableViewDataSource {
             fatalError("Error!")
         }
         
-        tableView.reloadData()
+        
         tableView.dataSource = self
+        tableView.reloadData()
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
         return fetchedResultsController.fetchedObjects?.count ?? 0
     }
     

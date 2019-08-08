@@ -24,6 +24,7 @@
 		0AC30F6522CD940D004A8525 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0AC30F6322CD940D004A8525 /* LaunchScreen.storyboard */; };
 		0AD3392D22F68E080004E3F3 /* ListTablesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3392C22F68E080004E3F3 /* ListTablesViewController.swift */; };
 		0AD3392F22F7AA9B0004E3F3 /* ListTablesTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3392E22F7AA9B0004E3F3 /* ListTablesTableViewDataSource.swift */; };
+		0AD3393122FCCE640004E3F3 /* SelectTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3393022FCCE640004E3F3 /* SelectTableViewController.swift */; };
 		0AD6C18922D9B4EB00AB703D /* InventorizerTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,7 @@
 		0AC30F6622CD940D004A8525 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0AD3392C22F68E080004E3F3 /* ListTablesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTablesViewController.swift; sourceTree = "<group>"; };
 		0AD3392E22F7AA9B0004E3F3 /* ListTablesTableViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTablesTableViewDataSource.swift; sourceTree = "<group>"; };
+		0AD3393022FCCE640004E3F3 /* SelectTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTableViewController.swift; sourceTree = "<group>"; };
 		0AD6C18822D9B4EB00AB703D /* InventorizerTableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InventorizerTableViewDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,6 +89,7 @@
 				0A8189D322CDC26A00168C02 /* InventoryItemViewController.swift */,
 				0A2F461222E7909300B388B8 /* OptionsViewController.swift */,
 				0AD3392C22F68E080004E3F3 /* ListTablesViewController.swift */,
+				0AD3393022FCCE640004E3F3 /* SelectTableViewController.swift */,
 			);
 			path = "View Controllers";
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				0AD3392F22F7AA9B0004E3F3 /* ListTablesTableViewDataSource.swift in Sources */,
 				0A2F461322E7909300B388B8 /* OptionsViewController.swift in Sources */,
 				0A1931F022E4289A0001C767 /* CDItem+CoreDataProperties.swift in Sources */,
+				0AD3393122FCCE640004E3F3 /* SelectTableViewController.swift in Sources */,
 				0AC30F5D22CD940C004A8525 /* InventoryTableViewController.swift in Sources */,
 				0A1931BD22E41FEB0001C767 /* InventorizerDataModel.xcdatamodeld in Sources */,
 				0A1931EF22E4289A0001C767 /* CDItem+CoreDataClass.swift in Sources */,

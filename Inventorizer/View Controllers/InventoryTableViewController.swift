@@ -13,7 +13,7 @@ class InventoryTableViewController: UIViewController {
     @IBOutlet weak var bottomToolBar: UIToolbar!
     @IBOutlet weak var mainTable: UITableView!
     @IBOutlet weak var topNavigation: UINavigationItem!
-    @IBOutlet weak var settingsButton: UIBarButtonItem!
+    @IBOutlet var moveButton: UIBarButtonItem!
     
     var buttonsNotEditing: [UIBarButtonItem]!
     var buttonsEditing: [UIBarButtonItem]!
@@ -21,6 +21,7 @@ class InventoryTableViewController: UIViewController {
     var dataSource: InventorizerTableViewDataSource!
     
     var table: Table!
+    var numTables = 1
     
     let trashButton: UIBarButtonItem = { () -> UIBarButtonItem in
         let trashButton = UIBarButtonItem(barButtonSystemItem: .trash, target: nil, action: #selector(trashTapped(_:)))
@@ -32,8 +33,6 @@ class InventoryTableViewController: UIViewController {
     }()
     
     let markButton = UIBarButtonItem(title: "Mark", style: .plain, target: nil, action: #selector(markTapped(_:)))
-    
-    let moveButton = UIBarButtonItem(title: "Move", style: .plain, target: nil, action: #selector(moveTapped(_:)))
     
     var searchScope = 0
 
@@ -48,7 +47,7 @@ class InventoryTableViewController: UIViewController {
         buttonsNotEditing = [UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .edit, target: nil, action: #selector(editToogleTapped(_:)))]
         
         // make the button bar for when editing is happening
-        buttonsEditing = [trashButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), markButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editToogleTapped(_:)))]
+        buttonsEditing = [trashButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), moveButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), markButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: #selector(editToogleTapped(_:)))]
         
         // set the toolbar to have the not editing bar
         bottomToolBar.setItems(buttonsNotEditing, animated: false)
@@ -195,7 +194,25 @@ class InventoryTableViewController: UIViewController {
     }
     
     @objc func moveTapped(_ sender: Any) {
+        guard let moveViewController = storyboard?.instantiateViewController(withIdentifier: "MoveTableViewController") as? UITableViewController else {
+            return
+        }
         
+        moveViewController.tableView.dataSource = nil
+        let exclusionPredicate = NSPredicate(format: "%K != %@", "id", table.id as CVarArg)
+        let dataSourceExcludingSelf = ListTablesTableViewDataSource(assignedTo: moveViewController.tableView, in: moveViewController, filteredBy: exclusionPredicate)
+        
+        let numTables = dataSourceExcludingSelf.fetchedResultsController.fetchedObjects?.count ?? 0
+        if numTables != 0 {
+            let numRows = mainTable.indexPathsForSelectedRows?.count ?? 0
+            moveViewController.navigationItem.prompt = "Move \(numRows) items"
+            navigationController?.pushViewController(moveViewController, animated: true)
+        }
+        else {
+            let errorAlert = UIAlertController(title: "Error", message: "You do not have any other tables. Please create a new table before moving an item.", preferredStyle: .alert)
+            errorAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(errorAlert, animated: true, completion: nil)
+        }
     }
     
     @objc func editToogleTapped(_ sender: Any) {
@@ -205,6 +222,7 @@ class InventoryTableViewController: UIViewController {
         }
         else {
             trashButton.isEnabled = false
+            moveButton.isEnabled = false
             enableDisableMarkButton()
             markButton.title = "Mark All"
             bottomToolBar.setItems(buttonsEditing, animated: true)
@@ -242,6 +260,14 @@ class InventoryTableViewController: UIViewController {
             destination.table = table
             destination.parentTableVC = self
         }
+        else if segue.identifier == "MoveItemsSegue" {
+            guard let destination = segue.destination as? SelectTableViewController else {
+                return
+            }
+            
+            destination.originatingTable = table
+            destination.numRows = mainTable.indexPathsForSelectedRows?.count ?? 0
+        }
     }
     
     func enableDisableMarkButton() {
@@ -262,6 +288,31 @@ class InventoryTableViewController: UIViewController {
     @IBAction func didUnwindSaveFromItem (_ sender: UIStoryboardSegue) {
         enableDisableMarkButton()
     }
+    
+    @IBAction func didUnwindCancelMove(_ sender: UIStoryboardSegue) {
+    
+    }
+    
+    @IBAction func didUnwindConfirmMove(_ sender: UIStoryboardSegue) {
+        guard let origin = sender.source as? SelectTableViewController else {
+            return
+        }
+        guard let selectedTable = origin.tableView.indexPathForSelectedRow else {
+            return
+        }
+        guard let selectedRows = mainTable.indexPathsForSelectedRows else {
+            return
+        }
+        
+        let newTable = origin.dataSource.fetchedResultsController.object(at: selectedTable)
+        for row in selectedRows {
+            dataSource.fetchedResultsController.object(at: row).tableID = newTable.id
+        }
+        
+        CoreDataService.saveContext()
+        editToogleTapped(self)
+    }
+    
     // MARK: End Unwind funcs    
 }
 
@@ -276,6 +327,7 @@ extension InventoryTableViewController: UITableViewDelegate {
             // sanity check
             if (tableView.indexPathsForSelectedRows?.count ?? 0) > 0 {
                 trashButton.isEnabled = true
+                moveButton.isEnabled = (numTables > 1)
                 markButton.title = "Mark"
             }
         }
@@ -285,6 +337,7 @@ extension InventoryTableViewController: UITableViewDelegate {
         if tableView.isEditing {
             if (tableView.indexPathsForSelectedRows?.count ?? 0) < 1 {
                 trashButton.isEnabled = false
+                moveButton.isEnabled = false
                 markButton.title = "Mark All"
             }
         }

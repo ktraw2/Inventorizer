@@ -41,7 +41,13 @@
                             </tableView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nnz-60-2XT">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
-                                <items/>
+                                <items>
+                                    <barButtonItem enabled="NO" title="Move" id="0pM-K4-pMi">
+                                        <connections>
+                                            <segue destination="IZE-K6-cPJ" kind="show" identifier="MoveItemsSegue" id="teE-ex-h6M"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
                             </toolbar>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -73,6 +79,7 @@
                     <connections>
                         <outlet property="bottomToolBar" destination="Nnz-60-2XT" id="nn0-xj-QtE"/>
                         <outlet property="mainTable" destination="VTC-3D-tc3" id="c9V-W3-g57"/>
+                        <outlet property="moveButton" destination="0pM-K4-pMi" id="baZ-e0-pfc"/>
                         <outlet property="topNavigation" destination="R30-WU-xDY" id="xP4-aU-efE"/>
                     </connections>
                 </viewController>
@@ -264,54 +271,6 @@
             </objects>
             <point key="canvasLocation" x="1828" y="402"/>
         </scene>
-        <!--Select a Table-->
-        <scene sceneID="E2p-AT-QYp">
-            <objects>
-                <tableViewController id="IBB-oB-IWE" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="zrd-ik-2Xl">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="moE-0z-gfT">
-                                <rect key="frame" x="0.0" y="28" width="414" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="moE-0z-gfT" id="kRG-p0-gPq">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="IBB-oB-IWE" id="xtm-ES-lmZ"/>
-                            <outlet property="delegate" destination="IBB-oB-IWE" id="oom-R9-223"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Select a Table" prompt="Move 0 Rows" id="voT-u3-40J">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="gaq-Xo-FM2"/>
-                        <barButtonItem key="rightBarButtonItem" enabled="NO" title="Move" id="EWd-Xq-288"/>
-                    </navigationItem>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="2Ar-zT-sBe" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1101" y="1066"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Hhm-TQ-mSK">
-            <objects>
-                <navigationController id="8Sp-5P-kqX" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="3gz-a8-8aw">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="IBB-oB-IWE" kind="relationship" relationship="rootViewController" id="QZC-LX-kZD"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Q21-Cd-N4w" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="184" y="1066"/>
-        </scene>
         <!--Inventory Item View Controller-->
         <scene sceneID="dfM-Rh-JF5">
             <objects>
@@ -462,6 +421,64 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mp1-ue-1PR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-677" y="21"/>
+        </scene>
+        <!--Select a Table-->
+        <scene sceneID="HcE-6t-JcL">
+            <objects>
+                <viewController id="IZE-K6-cPJ" customClass="SelectTableViewController" customModule="Inventorizer" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="9OS-zK-N0a">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Cnl-bH-7C3">
+                                <rect key="frame" x="0.0" y="122" width="414" height="740"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="ACO-tk-IKf">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ACO-tk-IKf" id="yWb-fn-wzJ">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="delegate" destination="IZE-K6-cPJ" id="JCM-HZ-DrK"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="f9y-hH-vk2" firstAttribute="bottom" secondItem="Cnl-bH-7C3" secondAttribute="bottom" id="fJX-CO-oYs"/>
+                            <constraint firstItem="f9y-hH-vk2" firstAttribute="trailing" secondItem="Cnl-bH-7C3" secondAttribute="trailing" id="fPn-iE-tdM"/>
+                            <constraint firstItem="Cnl-bH-7C3" firstAttribute="leading" secondItem="f9y-hH-vk2" secondAttribute="leading" id="hCL-ve-peK"/>
+                            <constraint firstItem="Cnl-bH-7C3" firstAttribute="top" secondItem="9OS-zK-N0a" secondAttribute="topMargin" id="jvv-Tq-sgJ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="f9y-hH-vk2"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Select a Table" prompt="Move 0 Rows" largeTitleDisplayMode="never" id="Z1A-9n-Etx">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="3db-Gs-aT9">
+                            <connections>
+                                <segue destination="Aio-uc-UrK" kind="unwind" identifier="CancelUnwindSegue" unwindAction="didUnwindCancelMove:" id="780-AK-wCI"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" title="Move" id="NaB-vm-YTv">
+                            <connections>
+                                <segue destination="Aio-uc-UrK" kind="unwind" unwindAction="didUnwindConfirmMove:" id="vWy-hX-tIP"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="moveButton" destination="NaB-vm-YTv" id="wT9-ZH-rCT"/>
+                        <outlet property="tableView" destination="Cnl-bH-7C3" id="VnC-UF-Ald"/>
+                        <outlet property="topNavigation" destination="Z1A-9n-Etx" id="w4l-FF-Jc5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QKa-cb-gWc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="Aio-uc-UrK" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="958" y="977"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
